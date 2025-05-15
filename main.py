@@ -20,21 +20,18 @@ def get_to_do_data():
     return modified_data
 
 
-def set_to_do_data():
+def set_to_do_data(to_do_data):
     """Get the data for the todo list from the txt file"""
 
-    with open("to-do-data.txt","r+") as data:
-        data = data.writelines()
     modified_data = []
-    
-    for i in range(len(data)//2):
-        if data[i*2][-1] =="\n": a = data[i*2][0:-1]
-        else: a = data[i*2]
-        if data[(i*2)+1][-1] =="\n": b = data[(i*2)+1][0:-1]
-        else: b = data[(i*2)+1]
-        modified_data.append([a, b])
+    for i in to_do_data:
+        modified_data.append(i[0])
+        modified_data.append(i[1])
 
-    return modified_data
+    with open("to-do-data.txt","r+") as data:
+        data.truncate()
+        data.write("\n".join(modified_data))
+    
 
 
 def output(screen):
@@ -66,13 +63,14 @@ def makeScreen(screen, width, height):
 
 
 
-
 def to_do_screen():
 
     to_do_data = get_to_do_data()
     size = os.get_terminal_size()
     width = size.columns
     height = size.lines
+
+    ticking_key_pressed = True
 
     select = 1
 
@@ -87,6 +85,8 @@ def to_do_screen():
         screen = []
 
         makeScreen(screen, width, height)
+
+        # adding the to do list to the screen
 
         for y in range(len(to_do_data)):
             
@@ -107,13 +107,10 @@ def to_do_screen():
             if select == y+1:
                 for x in range(width - 4):
                     screen[y*2+4][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+4][x+3] + "\033[0m"             
-        
-        output(screen)
-        time.sleep(0.001)
 
         if keyboard.is_pressed("esc"):
             running = False
-
+        
         if keyboard.is_pressed("up") and select >= 0 and not up_pressed:
             select -= 1
             up_pressed = True
@@ -125,6 +122,21 @@ def to_do_screen():
             down_pressed = True
         elif not keyboard.is_pressed("down"):
             down_pressed = False
+
+        if keyboard.is_pressed("enter") and not ticking_key_pressed:
+            if to_do_data[select-1][1] == "1":
+                to_do_data[select-1][1] = "0"
+            elif to_do_data[select-1][1] == "0":
+                to_do_data[select-1][1] = "1"
+            print(to_do_data[select-1][1])
+            ticking_key_pressed = True
+        elif not keyboard.is_pressed("enter"):
+            ticking_key_pressed = False
+
+        output(screen)
+        time.sleep(0.01)
+
+    set_to_do_data(to_do_data)
 
 
 
