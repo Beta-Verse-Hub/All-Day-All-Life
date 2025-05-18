@@ -65,6 +65,8 @@ def makeScreen(screen, width, height):
 
 def dvd_screen():
     dvd_pos = [1,1]
+    x_direction = 1
+    y_direction = 1
     running = True
 
     while running:
@@ -73,16 +75,36 @@ def dvd_screen():
         width = size.columns
         height = size.lines
 
-        highest_dvd_x_pos = width-2
-        highest_dvd_y_pos = height-1
+        highest_dvd_x_pos = width-4
+        highest_dvd_y_pos = height-2
 
         screen = []
 
         makeScreen(screen, width, height)
 
-        if not(dvd_pos[0] < highest_dvd_x_pos or dvd_pos[1] < highest_dvd_y_pos):
-            dvd_pos[0] += 1
-            dvd_pos[1] += 1
+        dvd_pos[0] += x_direction
+        dvd_pos[1] += y_direction
+
+        if not(1 <= dvd_pos[0] < highest_dvd_x_pos):
+            if x_direction == 1:
+                x_direction = -1
+            elif x_direction == -1:
+                x_direction = 1
+        if not(1 <= dvd_pos[1] < highest_dvd_y_pos):
+            if y_direction == 1:
+                y_direction = -1
+            elif y_direction == -1:
+                y_direction = 1
+
+        if dvd_pos[0] > highest_dvd_x_pos:
+            dvd_pos[0] = highest_dvd_x_pos
+        elif dvd_pos[0] < 1:
+            dvd_pos[0] = 1
+
+        if dvd_pos[1] > highest_dvd_y_pos:
+            dvd_pos[1] = highest_dvd_y_pos
+        elif dvd_pos[1] < 1:
+            dvd_pos[1] = 1
 
         screen[dvd_pos[1]][dvd_pos[0]] = "D"
         screen[dvd_pos[1]][dvd_pos[0]+1] = "V"
@@ -92,7 +114,7 @@ def dvd_screen():
             running = False
 
         output(screen)
-        time.sleep(0.05)
+        time.sleep(0.07)
 
 
 def to_do_screen():
@@ -119,7 +141,10 @@ def to_do_screen():
 
         screen = []
 
-        makeScreen(screen, width, height)
+        if keyboard.is_pressed("shift"):
+            makeScreen(screen, width, height-1)
+        else:
+            makeScreen(screen, width, height)
 
         # adding the to do list to the screen
 
@@ -168,15 +193,8 @@ def to_do_screen():
         elif not keyboard.is_pressed("enter"):
             ticking_key_pressed = False
         
-        pressed_key = keyboard.read_key()
-
-        
-        if pressed_key == "space":
-            to_do_data[select-1][0] = to_do_data[select-1][0] + " "
-        elif pressed_key == "backspace":
-            to_do_data[select-1][0] = to_do_data[select-1][0][0:-1]
-        elif pressed_key in valid_keys:
-            to_do_data[select-1][0] = to_do_data[select-1][0] + pressed_key
+        if keyboard.is_pressed("shift"):
+            a = input(str(select+1)+": ")
 
         output(screen)
         time.sleep(0.05)
@@ -194,7 +212,7 @@ def main_screen():
 
     options_and_screens = {"[ ] To-do List" : to_do_screen,
                            "[ ] Terminal" : None,
-                           "[ ] DVD" : None}
+                           "[ ] DVD" : dvd_screen}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
