@@ -63,6 +63,38 @@ def makeScreen(screen, width, height):
 
 
 
+def dvd_screen():
+    dvd_pos = [1,1]
+    running = True
+
+    while running:
+
+        size = os.get_terminal_size()
+        width = size.columns
+        height = size.lines
+
+        highest_dvd_x_pos = width-2
+        highest_dvd_y_pos = height-1
+
+        screen = []
+
+        makeScreen(screen, width, height)
+
+        if not(dvd_pos[0] < highest_dvd_x_pos or dvd_pos[1] < highest_dvd_y_pos):
+            dvd_pos[0] += 1
+            dvd_pos[1] += 1
+
+        screen[dvd_pos[1]][dvd_pos[0]] = "D"
+        screen[dvd_pos[1]][dvd_pos[0]+1] = "V"
+        screen[dvd_pos[1]][dvd_pos[0]+2] = "D"
+
+        if keyboard.is_pressed("esc"):
+            running = False
+
+        output(screen)
+        time.sleep(0.05)
+
+
 def to_do_screen():
 
     to_do_data = get_to_do_data()
@@ -70,7 +102,10 @@ def to_do_screen():
     width = size.columns
     height = size.lines
 
+    valid_keys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0"]
+
     ticking_key_pressed = True
+    key_press_order = 0
 
     select = 1
 
@@ -132,12 +167,21 @@ def to_do_screen():
             ticking_key_pressed = True
         elif not keyboard.is_pressed("enter"):
             ticking_key_pressed = False
+        
+        pressed_key = keyboard.read_key()
+
+        
+        if pressed_key == "space":
+            to_do_data[select-1][0] = to_do_data[select-1][0] + " "
+        elif pressed_key == "backspace":
+            to_do_data[select-1][0] = to_do_data[select-1][0][0:-1]
+        elif pressed_key in valid_keys:
+            to_do_data[select-1][0] = to_do_data[select-1][0] + pressed_key
 
         output(screen)
-        time.sleep(0.01)
+        time.sleep(0.05)
 
     set_to_do_data(to_do_data)
-
 
 
 def main_screen():
@@ -149,7 +193,8 @@ def main_screen():
     height = size.lines
 
     options_and_screens = {"[ ] To-do List" : to_do_screen,
-                           "[ ] Terminal" : None}
+                           "[ ] Terminal" : None,
+                           "[ ] DVD" : None}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
