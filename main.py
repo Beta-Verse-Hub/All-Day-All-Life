@@ -1,7 +1,7 @@
 import os
 import keyboard
 import time
-import pygetwindow
+import random
 
 
 def get_to_do_data():
@@ -61,7 +61,59 @@ def makeScreen(screen, width, height):
             for x in range(width-2):
                 screen[y].append(" ")
             screen[y].append("#")
+            
 
+
+def pipes_screen():
+    
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    pipes =   {
+        [ [[ 0, 1], [ 0, 1]], [[ 0,-1], [ 0,-1]] ] : "║",
+        [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ] : "=",
+        [ [[ 0, 1], [ 1, 0]], [[ 1, 0], [ 0, 1]] ] : "╔",
+        [ [[ 0, 1], [-1, 0]], [[ 1, 0], [ 0,-1]] ] : "╗",
+        [ [[ 0,-1], [ 1, 0]], [[-1, 0], [ 0, 1]] ] : "╚",
+        [ [[ 0,-1], [-1, 0]], [[-1, 0], [ 0,-1]] ] : "╝"
+    }
+    direction = [[0,1],[0,1]]
+    pos = [random.randint(1,width-1),random.randint(1,height-1)]
+    directionint = 2
+
+    """
+        2
+        |
+     1--+--3
+        |
+        4
+    """
+
+    screen = []
+    makeScreen(screen, width, height)
+    running = True
+
+    while running:
+
+        size = os.get_terminal_size()
+        width = size.columns
+        height = size.lines      
+        
+        a = random.randint(0,10)
+        if a == directionint or a > 4:
+            pos[0] += direction[0][0]
+            pos[1] += direction[0][1]
+        else:
+            directionint = a
+
+        screen[pos[1]][pos[0]] = "║"
+
+        if keyboard.is_pressed("esc"):
+            running = False
+
+        output(screen)
+        time.sleep(0.07)
 
 
 def dvd_screen():
@@ -222,7 +274,7 @@ def main_screen():
                            "[ ] Terminal" : None,
                            "[ ] File Manager" : None,
                            "[ ] DVD" : dvd_screen,
-                           "[ ] Game of Life" : None}
+                           "[ ] Pipes" : pipes_screen}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
