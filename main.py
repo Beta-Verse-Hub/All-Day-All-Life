@@ -272,6 +272,7 @@ def main_screen():
 
         if keyboard.is_pressed("esc") and not esc_pressed:
             running = False
+
         elif not keyboard.is_pressed("esc"):
             esc_pressed = False
 
