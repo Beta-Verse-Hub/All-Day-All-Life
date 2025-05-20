@@ -1,6 +1,7 @@
 import os
 import keyboard
 import time
+import pygetwindow
 
 
 def get_to_do_data():
@@ -124,17 +125,15 @@ def to_do_screen():
     width = size.columns
     height = size.lines
 
-    valid_keys = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","1","2","3","4","5","6","7","8","9","0"]
-
-    ticking_key_pressed = True
-    key_press_order = 0
+    shift_key_pressed = False
+    up_key_pressed = False
+    down_key_pressed = False
+    enter_key_pressed = False
 
     select = 1
-
     running = True
 
     while running:
-
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines
@@ -143,61 +142,70 @@ def to_do_screen():
 
         if keyboard.is_pressed("shift"):
             makeScreen(screen, width, height-1)
+            shift_key_pressed = True
         else:
             makeScreen(screen, width, height)
+            shift_key_pressed = False
 
-        # adding the to do list to the screen
+        for y in range(height):
 
-        for y in range(len(to_do_data)):
-            
-            ticked = False
-            
-            if int(to_do_data[y][1]):
-                screen[y*2+4][3] = "\u221A"
-                ticked = True
-            else:
-                screen[y*2+4][3] = "X"
+            try:
 
-            for x in range(len(to_do_data[y][0])):
-                if ticked:
-                    screen[y*2+4][x+6] = "\033[4m" + str(to_do_data[y][0])[x] + "\033[0m"
+                ticked = False
+
+                if int(to_do_data[y][1]):
+                    screen[y*2+2][3] = "\u221A"
+                    ticked = True
                 else:
-                    screen[y*2+4][x+6] = str(to_do_data[y][0])[x]
+                    screen[y*2+2][3] = "X"
 
-            if select == y+1:
-                for x in range(width - 4):
-                    screen[y*2+4][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+4][x+3] + "\033[0m"             
+                for x in range(len(to_do_data[y][0])):
+                    if ticked:
+                        screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y][0])[x] + "\033[0m"
+                    else:
+                        screen[y*2+2][x+6] = str(to_do_data[y][0])[x]
+
+                if select == y+1:
+                    for x in range(width - 4):
+                        screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
+            except:
+                pass
 
         if keyboard.is_pressed("esc"):
             running = False
-        
-        if keyboard.is_pressed("up") and select >= 0 and not up_pressed:
-            select -= 1
-            up_pressed = True
-        elif not keyboard.is_pressed("up"):
-            up_pressed = False
-        
-        if keyboard.is_pressed("down") and select <= len(to_do_data)-1 and not down_pressed:
-            select += 1
-            down_pressed = True
-        elif not keyboard.is_pressed("down"):
-            down_pressed = False
 
-        if keyboard.is_pressed("enter") and not ticking_key_pressed:
+        if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
+            select -= 1
+            up_key_pressed = True
+        
+        elif not keyboard.is_pressed("up"):
+            up_key_pressed = False
+
+        if keyboard.is_pressed("down") and select < len(to_do_data) and not down_key_pressed:
+            select += 1
+            down_key_pressed = True
+        
+        elif not keyboard.is_pressed("down"):
+            down_key_pressed = False
+
+        if keyboard.is_pressed("enter") and not enter_key_pressed:
             if to_do_data[select-1][1] == "1":
                 to_do_data[select-1][1] = "0"
             elif to_do_data[select-1][1] == "0":
                 to_do_data[select-1][1] = "1"
-            print(to_do_data[select-1][1])
-            ticking_key_pressed = True
-        elif not keyboard.is_pressed("enter"):
-            ticking_key_pressed = False
+            enter_key_pressed = True
         
-        if keyboard.is_pressed("shift"):
-            a = input(str(select+1)+": ")
+        elif not keyboard.is_pressed("enter"):
+            enter_key_pressed = False
+
+        if shift_key_pressed:
+            
+            text = input(" " + str(select) + ": ")
+            to_do_data[select-1][0] = text
+            enter_key_pressed = True
 
         output(screen)
-        time.sleep(0.05)
+        time.sleep(0.01)
 
     set_to_do_data(to_do_data)
 
@@ -212,7 +220,9 @@ def main_screen():
 
     options_and_screens = {"[ ] To-do List" : to_do_screen,
                            "[ ] Terminal" : None,
-                           "[ ] DVD" : dvd_screen}
+                           "[ ] File Manager" : None,
+                           "[ ] DVD" : dvd_screen,
+                           "[ ] Game of Life" : None}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
