@@ -70,17 +70,26 @@ def pipes_screen():
     width = size.columns
     height = size.lines
 
-    pipes =   {
-        [ [[ 0, 1], [ 0, 1]], [[ 0,-1], [ 0,-1]] ] : "║",
-        [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ] : "=",
-        [ [[ 0, 1], [ 1, 0]], [[ 1, 0], [ 0, 1]] ] : "╔",
-        [ [[ 0, 1], [-1, 0]], [[ 1, 0], [ 0,-1]] ] : "╗",
-        [ [[ 0,-1], [ 1, 0]], [[-1, 0], [ 0, 1]] ] : "╚",
-        [ [[ 0,-1], [-1, 0]], [[-1, 0], [ 0,-1]] ] : "╝"
+    pipes = {
+        "║" : [ [[ 0, 1], [ 0, 1]], [[ 0,-1], [ 0,-1]] ],
+        "=" : [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ],
+        "╔" : [ [[ 0,-1], [ 1, 0]], [[-1, 0], [ 0, 1]] ],
+        "╗" : [ [[ 0,-1], [-1, 0]], [[ 1, 0], [ 0, 1]] ],
+        "╚" : [ [[ 0, 1], [ 1, 0]], [[-1, 0], [ 0,-1]] ],
+        "╝" : [ [[ 0, 1], [-1, 0]], [[ 1, 0], [ 0,-1]] ]
     }
+    all_directions = list(pipes.values())
+    all_pipes = list(pipes.keys())
+
     direction = [[0,1],[0,1]]
     pos = [random.randint(1,width-1),random.randint(1,height-1)]
     directionint = 2
+    directionint_to_direction = {
+        "1":[-1, 0],
+        "2":[ 0,-1],
+        "3":[ 1, 0],
+        "4":[ 0, 1]
+    }
 
     """
         2
@@ -99,21 +108,39 @@ def pipes_screen():
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines      
+            
+        direction[0] = direction[1]
+
+        a = random.randint(1,15)
         
-        a = random.randint(0,10)
+        if (directionint == 1 and a == 3) or (directionint == 3 and a == 1) or (directionint == 2 and a == 4) or (directionint == 4 and a == 2):
+            a = directionint
+
         if a == directionint or a > 4:
             pos[0] += direction[0][0]
             pos[1] += direction[0][1]
         else:
             directionint = a
+            direction[1] = directionint_to_direction[str(directionint)]
+            
+        if pos[0] > width-2:
+            pos[0] = 1
+        if pos[0] < 1:
+            pos[0] = width-2
+        if pos[1] > height-2:
+            pos[1] = 1
+        if pos[1] < 1:
+            pos[1] = height-2
 
-        screen[pos[1]][pos[0]] = "║"
+        for i in range(len(pipes)):
+            if direction in all_directions[i]:
+                screen[pos[1]][pos[0]] = all_pipes[i]
 
         if keyboard.is_pressed("esc"):
             running = False
 
         output(screen)
-        time.sleep(0.07)
+        time.sleep(0.001)
 
 
 def dvd_screen():
