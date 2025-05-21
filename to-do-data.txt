@@ -1,32 +1,6 @@
-nnn
-1
-gggg
+Add a terminal
 0
-aaajj
-1
-bruh
+Add a file manager
 0
-nnn
-0
-gggg
-0
-aaajj
-1
-bruh
-0
-nnn
-0
-gggg
-0
-aaajj
-1
-bruh
-0
-nnn
-0
-gggg
-0
-aaajj
-1
-bruh
+window management with lua
 0

@@ -240,10 +240,12 @@ def to_do_screen():
     width = size.columns
     height = size.lines
 
+    insert_key_pressed = False
+    del_key_pressed = False
     shift_key_pressed = False
     up_key_pressed = False
     down_key_pressed = False
-    enter_key_pressed = False
+    enter_key_pressed = True
 
     select = 1
     running = True
@@ -289,8 +291,19 @@ def to_do_screen():
         if keyboard.is_pressed("esc"):
             running = False
 
-        if keyboard.is_pressed("del"):
-            to_do_data.pop(select)
+        if keyboard.is_pressed("del") and not del_key_pressed:
+            to_do_data.pop(select-1)
+            if select > len(to_do_data):
+                select = len(to_do_data)
+            del_key_pressed = True
+        elif not keyboard.is_pressed("del"):
+            del_key_pressed = False
+
+        if keyboard.is_pressed("insert") and not insert_key_pressed:
+            to_do_data.insert(0,["","0"])
+            insert_key_pressed = True
+        elif not keyboard.is_pressed("insert"):
+            insert_key_pressed = False
 
         if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
             select -= 1
