@@ -2,6 +2,7 @@ import os
 import keyboard
 import time
 import random
+from pynput.mouse import Controller, Button
 
 
 def get_to_do_data():
@@ -197,6 +198,41 @@ def dvd_screen():
         time.sleep(0.07)
 
 
+def auto_clicker():
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    screen = []
+    os.system("cls")
+    mouse = Controller()
+
+    print("press space to start the program")
+
+    while not keyboard.is_pressed("space"):
+        pass
+
+    delay = int(input("start autoclicking after how many seconds : "))
+    each_delay = int(input("delay between each click in seconds : "))
+    button = int(input("button to click, 0 for left, 1 for right"))
+
+    if button:
+        button = Button.right
+    else:
+        button = Button.left
+
+    print("press esc to stop")
+
+    for i in reversed(range(delay)):
+        print(i+1)
+        time.sleep(1)
+    
+    while not keyboard.is_pressed("esc"):
+        mouse.click(button)
+        time.sleep(each_delay)
+
+
 def to_do_screen():
 
     to_do_data = get_to_do_data()
@@ -253,6 +289,9 @@ def to_do_screen():
         if keyboard.is_pressed("esc"):
             running = False
 
+        if keyboard.is_pressed("del"):
+            to_do_data.pop(select)
+
         if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
             select -= 1
             up_key_pressed = True
@@ -301,7 +340,8 @@ def main_screen():
                            "[ ] Terminal" : None,
                            "[ ] File Manager" : None,
                            "[ ] DVD" : dvd_screen,
-                           "[ ] Pipes" : pipes_screen}
+                           "[ ] Pipes" : pipes_screen,
+                           "[ ] Auto Clicker" : auto_clicker}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
