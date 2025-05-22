@@ -248,6 +248,8 @@ def to_do_screen():
     enter_key_pressed = True
 
     select = 1
+    start_element = 0
+    end_element = start_element + (height//2) - 1
     running = True
 
     while running:
@@ -256,6 +258,8 @@ def to_do_screen():
         height = size.lines
 
         screen = []
+        start_element = select-1
+        end_element = start_element + ((height)//2)-1
 
         if keyboard.is_pressed("shift"):
             makeScreen(screen, width, height-1)
@@ -264,27 +268,30 @@ def to_do_screen():
             makeScreen(screen, width, height)
             shift_key_pressed = False
 
-        for y in range(height):
+        for y in range((height//2)-1):
 
             try:
 
-                ticked = False
+                if not(start_element > select):
 
-                if int(to_do_data[y][1]):
-                    screen[y*2+2][3] = "\u221A"
-                    ticked = True
-                else:
-                    screen[y*2+2][3] = "X"
+                    ticked = False
 
-                for x in range(len(to_do_data[y][0])):
-                    if ticked:
-                        screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y][0])[x] + "\033[0m"
+                    if int(to_do_data[y+start_element][1]):
+                        screen[y*2+2][3] = "\u221A"
+                        ticked = True
                     else:
-                        screen[y*2+2][x+6] = str(to_do_data[y][0])[x]
+                        screen[y*2+2][3] = "X"
 
-                if select == y+1:
-                    for x in range(width - 4):
-                        screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
+                    for x in range(len(to_do_data[y+start_element][0])):
+                        if ticked:
+                            screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
+                        else:
+                            screen[y*2+2][x+6] = str(to_do_data[y+start_element][0])[x]
+
+                    if y == 0:
+                        for x in range(width - 4):
+                            screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
+
             except:
                 pass
 
