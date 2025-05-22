@@ -233,6 +233,10 @@ def auto_clicker():
         time.sleep(each_delay)
 
 
+def file_manager_screen():
+    pass
+
+
 def to_do_screen():
 
     to_do_data = get_to_do_data()
