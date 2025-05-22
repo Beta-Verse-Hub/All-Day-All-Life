@@ -200,11 +200,6 @@ def dvd_screen():
 
 def auto_clicker():
 
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
-
-    screen = []
     os.system("cls")
     mouse = Controller()
 
@@ -234,7 +229,83 @@ def auto_clicker():
 
 
 def file_manager_screen():
-    pass
+    
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    select = 0
+    path = ["C:"]
+
+    up_key_pressed = False
+    down_key_pressed = False
+    esc_pressed = False
+    right_key_pressed = False
+    left_key_pressed = False
+
+    running = True
+
+    while running:
+
+        size = os.get_terminal_size()
+        width = size.columns
+        height = size.lines
+
+        screen = []
+
+        makeScreen(screen, width, height)
+
+        directories = os.listdir("/".join(path)+"/")
+
+        for y in range(len(directories)):
+            try:
+                if y != select:
+                    for x in range(len(directories[y])):
+                        screen[y*2+2][x+3] = directories[y][x]
+                else:
+                    for x in range(len(directories[y])):
+                        screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + directories[y][x] + "\033[0m"
+            except:
+                break
+
+        if keyboard.is_pressed("up") and select > 0 and not up_key_pressed:
+            select -= 1
+            up_key_pressed = True
+        
+        elif not keyboard.is_pressed("up"):
+            up_key_pressed = False
+
+        if keyboard.is_pressed("down") and select < len(directories)-1 and not down_key_pressed:
+            select += 1
+            down_key_pressed = True
+        
+        elif not keyboard.is_pressed("down"):
+            down_key_pressed = False
+
+        if keyboard.is_pressed("right") and select > 0 and not right_key_pressed:
+            path.append(directories[select])
+            right_key_pressed = True
+        
+        elif not keyboard.is_pressed("right"):
+            right_key_pressed = False
+
+        if keyboard.is_pressed("left") and select < len(directories)-1 and not left_key_pressed:
+            path.pop()
+            left_key_pressed = True
+        
+        elif not keyboard.is_pressed("left"):
+            left_key_pressed = False
+
+        output(screen)
+        print("/".join(path))
+        time.sleep(0.001)
+
+        if keyboard.is_pressed("esc") and not esc_pressed:
+            running = False
+
+        elif not keyboard.is_pressed("esc"):
+            esc_pressed = False
+
 
 
 def to_do_screen():
@@ -253,7 +324,6 @@ def to_do_screen():
 
     select = 1
     start_element = 0
-    end_element = start_element + (height//2) - 1
     running = True
 
     while running:
@@ -263,7 +333,6 @@ def to_do_screen():
 
         screen = []
         start_element = select-1
-        end_element = start_element + ((height)//2)-1
 
         if keyboard.is_pressed("shift"):
             makeScreen(screen, width, height-1)
@@ -362,7 +431,7 @@ def main_screen():
 
     options_and_screens = {"[ ] To-do List" : to_do_screen,
                            "[ ] Terminal" : None,
-                           "[ ] File Manager" : None,
+                           "[ ] File Manager" : file_manager_screen,
                            "[ ] DVD" : dvd_screen,
                            "[ ] Pipes" : pipes_screen,
                            "[ ] Auto Clicker" : auto_clicker}
