@@ -150,6 +150,8 @@ def dvd_screen():
     x_direction = 1
     y_direction = 1
     running = True
+    colors = ["\033[38;2;255;0;0m", "\033[38;2;0;255;0m", "\033[38;2;0;0;255m", "\033[38;2;255;255;m", "\033[38;2;255;0;255m", "\033[38;2;0;255;255m", "\033[38;2;255;255;255m"]
+    color_number = random.randint(0,len(colors)-1)
 
     while running:
 
@@ -172,11 +174,13 @@ def dvd_screen():
                 x_direction = -1
             elif x_direction == -1:
                 x_direction = 1
+            color_number = random.randint(0,len(colors)-1)
         if not(1 <= dvd_pos[1] < highest_dvd_y_pos):
             if y_direction == 1:
                 y_direction = -1
             elif y_direction == -1:
                 y_direction = 1
+            color_number = random.randint(0,len(colors)-1)
 
         if dvd_pos[0] > highest_dvd_x_pos:
             dvd_pos[0] = highest_dvd_x_pos
@@ -188,9 +192,9 @@ def dvd_screen():
         elif dvd_pos[1] < 1:
             dvd_pos[1] = 1
 
-        screen[dvd_pos[1]][dvd_pos[0]] = "D"
-        screen[dvd_pos[1]][dvd_pos[0]+1] = "V"
-        screen[dvd_pos[1]][dvd_pos[0]+2] = "D"
+        screen[dvd_pos[1]][dvd_pos[0]] = colors[color_number] + "D" + "\033[0m"
+        screen[dvd_pos[1]][dvd_pos[0]+1] = colors[color_number] + "V" + "\033[0m"
+        screen[dvd_pos[1]][dvd_pos[0]+2] = colors[color_number] + "D" + "\033[0m"
 
         if keyboard.is_pressed("esc"):
             running = False
@@ -297,6 +301,7 @@ def file_manager_screen():
             except NotADirectoryError as e:
                 os.startfile("/".join(path))
                 path.pop()
+            select = 0
             right_key_pressed = True
         
         elif not keyboard.is_pressed("right"):
@@ -304,6 +309,7 @@ def file_manager_screen():
 
         if keyboard.is_pressed("left") and select < len(directories)-1 and not left_key_pressed:
             path.pop()
+            select = 0
             left_key_pressed = True
         
         elif not keyboard.is_pressed("left"):
@@ -333,6 +339,9 @@ def to_do_screen():
     up_key_pressed = False
     down_key_pressed = False
     enter_key_pressed = True
+
+    rgb = [0,127,255]
+    increase_rgb = [1,1,1]
 
     select = 1
     start_element = 0
@@ -375,10 +384,34 @@ def to_do_screen():
 
                     if y == 0:
                         for x in range(width - 4):
-                            screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
+                            screen[y*2+2][x+2] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
 
             except:
                 pass
+
+        rgb[0] += increase_rgb[0]
+        if rgb[0] > 255:
+            increase_rgb[0] = -1
+            rgb[0] = 255
+        if rgb[0] < 0:
+            increase_rgb[0] = 1
+            rgb[0] = 0
+
+        rgb[1] += increase_rgb[1]
+        if rgb[1] > 255:
+            increase_rgb[1] = -1
+            rgb[1] = 255
+        if rgb[1] < 0:
+            increase_rgb[1] = 1
+            rgb[1] = 0
+
+        rgb[2] += increase_rgb[2]
+        if rgb[2] > 255:
+            increase_rgb[2] = -1
+            rgb[2] = 255
+        if rgb[2] < 0:
+            increase_rgb[2] = 1
+            rgb[2] = 0
 
         if keyboard.is_pressed("esc"):
             running = False
@@ -392,7 +425,7 @@ def to_do_screen():
             del_key_pressed = False
 
         if keyboard.is_pressed("insert") and not insert_key_pressed:
-            to_do_data.insert(0,["","0"])
+            to_do_data.insert(select,["","0"])
             insert_key_pressed = True
         elif not keyboard.is_pressed("insert"):
             insert_key_pressed = False
@@ -455,8 +488,8 @@ def main_screen():
     down_pressed = False
     esc_pressed = False
 
-    rgb = [255,0,0]
-    increasing_color_index = 1
+    rgb = [0,127,255]
+    increase_rgb = [1,1,1]
 
     running = True
 
@@ -474,26 +507,34 @@ def main_screen():
 
             for j in range(len(options[i])):
 
-                screen[i+2][j+2] = f"\033[38;2;{str(math.floor(rgb[0]))};{str(math.floor(rgb[1]))};{str(math.floor(rgb[2]))}m" + options[i][j] + "\033[0m"
+                screen[i+2][j+2] = f"\033[38;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m" + options[i][j] + "\033[0m"
             
             if select == i:
                 screen[i+2][3] = "\267"
 
-        if increasing_color_index == 0:
-            rgb[2] -= 1
-            rgb[0] += 1
-            if rgb[2] == 0:
-                increasing_color_index = 1
-        elif increasing_color_index == 1:
-            rgb[0] -= 1
-            rgb[1] += 1
-            if rgb[0] == 0:
-                increasing_color_index = 2
-        elif increasing_color_index == 1:
-            rgb[1] -= 1
-            rgb[2] += 1
-            if rgb[1] == 0:
-                increasing_color_index = 0
+        rgb[0] += increase_rgb[0]
+        if rgb[0] > 255:
+            increase_rgb[0] = -1
+            rgb[0] = 255
+        if rgb[0] < 0:
+            increase_rgb[0] = 1
+            rgb[0] = 0
+
+        rgb[1] += increase_rgb[1]
+        if rgb[1] > 255:
+            increase_rgb[1] = -1
+            rgb[1] = 255
+        if rgb[1] < 0:
+            increase_rgb[1] = 1
+            rgb[1] = 0
+
+        rgb[2] += increase_rgb[2]
+        if rgb[2] > 255:
+            increase_rgb[2] = -1
+            rgb[2] = 255
+        if rgb[2] < 0:
+            increase_rgb[2] = 1
+            rgb[2] = 0
 
         if keyboard.is_pressed("up") and select > 0 and not up_pressed:
             select -= 1
