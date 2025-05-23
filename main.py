@@ -2,6 +2,7 @@ import os
 import keyboard
 import time
 import random
+import math
 from pynput.mouse import Controller, Button
 
 
@@ -255,16 +256,23 @@ def file_manager_screen():
 
         makeScreen(screen, width, height)
 
-        directories = os.listdir("/".join(path)+"/")
+        formatted_path = "/".join(path)+"/"
+        directories = os.listdir(formatted_path)
+
+        for x in range(len(formatted_path)):
+            try:
+                screen[2][x+2] = "\033[48;2;255;255;255m\033[38;2;200;0;255m" + formatted_path[x] + "\033[0m"
+            except:
+                break
 
         for y in range(len(directories)):
             try:
-                if y != select:
-                    for x in range(len(directories[y])):
-                        screen[y*2+2][x+3] = directories[y][x]
+                if y != 0:
+                    for x in range(len(directories[y+select])):
+                        screen[y*2+4][x+3] = directories[y+select][x]
                 else:
-                    for x in range(len(directories[y])):
-                        screen[y*2+2][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + directories[y][x] + "\033[0m"
+                    for x in range(len(directories[y+select])):
+                        screen[y*2+4][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + directories[y+select][x] + "\033[0m"
             except:
                 break
 
@@ -284,6 +292,11 @@ def file_manager_screen():
 
         if keyboard.is_pressed("right") and select > 0 and not right_key_pressed:
             path.append(directories[select])
+            try:
+                os.listdir("/".join(path)+"/")
+            except NotADirectoryError as e:
+                os.startfile("/".join(path))
+                path.pop()
             right_key_pressed = True
         
         elif not keyboard.is_pressed("right"):
@@ -297,7 +310,6 @@ def file_manager_screen():
             left_key_pressed = False
 
         output(screen)
-        print("/".join(path))
         time.sleep(0.001)
 
         if keyboard.is_pressed("esc") and not esc_pressed:
@@ -443,6 +455,9 @@ def main_screen():
     down_pressed = False
     esc_pressed = False
 
+    rgb = [255,0,0]
+    increasing_color_index = 1
+
     running = True
 
     while running:
@@ -458,10 +473,27 @@ def main_screen():
         for i in range(len(options)):
 
             for j in range(len(options[i])):
-                screen[i+2][j+2] = options[i][j]
+
+                screen[i+2][j+2] = f"\033[38;2;{str(math.floor(rgb[0]))};{str(math.floor(rgb[1]))};{str(math.floor(rgb[2]))}m" + options[i][j] + "\033[0m"
             
             if select == i:
                 screen[i+2][3] = "\267"
+
+        if increasing_color_index == 0:
+            rgb[2] -= 1
+            rgb[0] += 1
+            if rgb[2] == 0:
+                increasing_color_index = 1
+        elif increasing_color_index == 1:
+            rgb[0] -= 1
+            rgb[1] += 1
+            if rgb[0] == 0:
+                increasing_color_index = 2
+        elif increasing_color_index == 1:
+            rgb[1] -= 1
+            rgb[2] += 1
+            if rgb[1] == 0:
+                increasing_color_index = 0
 
         if keyboard.is_pressed("up") and select > 0 and not up_pressed:
             select -= 1
