@@ -62,16 +62,8 @@ def makeScreen(screen, width, height):
 
     for y in range(height):
         screen.append([])
-        if y == 0 or y == height-1:
+        for x in range(width):
             screen[y].append(" ")
-            for x in range(width-2):
-                screen[y].append("#")
-            screen[y].append(" ")
-        else:
-            screen[y].append("#")
-            for x in range(width-2):
-                screen[y].append(" ")
-            screen[y].append("#")
             
 
 
@@ -240,6 +232,48 @@ def auto_clicker():
     while not keyboard.is_pressed("esc"):
         mouse.click(button)
         time.sleep(each_delay)
+
+
+def terminal_screen():
+
+    os.system("cls")
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    path = ["C:"]
+    
+    up_key_pressed = False
+    down_key_pressed = False
+    esc_pressed = False
+    right_key_pressed = False
+    left_key_pressed = False
+
+    running = True
+
+    while running:
+
+        os.system("cls")
+
+        size = os.get_terminal_size()
+        width = size.columns
+        height = size.lines
+
+        screen = []
+
+        makeScreen(screen, width, height)
+
+        formatted_path = "\\".join(path)+"\\"
+        a = input("\033[48;2;255;255;0m\033[38;2;0;0;0m" + formatted_path + " \033[0m" + "\033[38;2;255;255;0m\033[48;2;0;255;0m\u259B\033[0m" + "\033[38;2;0;255;0m\033[48;2;255;255;0m\u259F\033[0m")
+
+        time.sleep(0.001)
+
+        if keyboard.is_pressed("esc") and not esc_pressed:
+            running = False
+
+        elif not keyboard.is_pressed("esc"):
+            esc_pressed = False
 
 
 def file_manager_screen():
@@ -488,7 +522,7 @@ def main_screen():
     height = size.lines
 
     options_and_screens = {"[ ] To-do List" : to_do_screen,
-                           "[ ] Terminal" : None,
+                           "[ ] Terminal" : terminal_screen,
                            "[ ] File Manager" : file_manager_screen,
                            "[ ] DVD" : dvd_screen,
                            "[ ] Pipes" : pipes_screen,
