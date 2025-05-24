@@ -1,3 +1,0 @@
-- add to-do list
-- a terminal
-- game of life
