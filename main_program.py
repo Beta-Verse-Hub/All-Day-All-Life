@@ -2,6 +2,7 @@ import os
 import keyboard
 import time
 import random
+import ctypes
 from pynput.mouse import Controller, Button
 
 
@@ -73,6 +74,9 @@ def pipes_screen():
     width = size.columns
     height = size.lines
 
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
     pipes = {
         "║" : [ [[ 0, 1], [ 0, 1]], [[ 0,-1], [ 0,-1]] ],
         "=" : [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ],
@@ -112,6 +116,9 @@ def pipes_screen():
         width = size.columns
         height = size.lines      
             
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+        
         direction[0] = direction[1]
 
         a = random.randint(1,15)
@@ -139,18 +146,27 @@ def pipes_screen():
             if direction in all_directions[i]:
                 screen[pos[1]][pos[0]] = all_pipes[i]
 
-        if keyboard.is_pressed("esc"):
-            running = False
+        
+        if active_window == current_window:
+
+            if keyboard.is_pressed("esc"):
+                running = False
 
         output(screen)
         time.sleep(0.001)
 
 
 def dvd_screen():
+
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
     dvd_pos = [1,1]
     x_direction = 1
     y_direction = 1
+
     running = True
+
     colors = ["\033[38;2;255;0;0m", "\033[38;2;0;255;0m", "\033[38;2;0;0;255m", "\033[38;2;255;255;m", "\033[38;2;255;0;255m", "\033[38;2;0;255;255m", "\033[38;2;255;255;255m"]
     color_number = random.randint(0,len(colors)-1)
 
@@ -159,6 +175,9 @@ def dvd_screen():
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
 
         highest_dvd_x_pos = width-4
         highest_dvd_y_pos = height-2
@@ -197,8 +216,11 @@ def dvd_screen():
         screen[dvd_pos[1]][dvd_pos[0]+1] = colors[color_number] + "V" + "\033[0m"
         screen[dvd_pos[1]][dvd_pos[0]+2] = colors[color_number] + "D" + "\033[0m"
 
-        if keyboard.is_pressed("esc"):
-            running = False
+        
+        if active_window == current_window:
+
+            if keyboard.is_pressed("esc"):
+                running = False
 
         output(screen)
         time.sleep(0.07)
@@ -282,6 +304,9 @@ def file_manager_screen():
     width = size.columns
     height = size.lines
 
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
     select = 0
     path = ["C:"]
     available_drives = list_drives()
@@ -299,6 +324,9 @@ def file_manager_screen():
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
 
         screen = []
 
@@ -327,53 +355,58 @@ def file_manager_screen():
             except:
                 break
 
-        if keyboard.is_pressed("up") and select > 0 and not up_key_pressed:
-            select -= 1
-            up_key_pressed = True
         
-        elif not keyboard.is_pressed("up"):
-            up_key_pressed = False
+        if active_window == current_window:
 
-        if keyboard.is_pressed("down") and select < len(directories)-1 and not down_key_pressed:
-            select += 1
-            down_key_pressed = True
-        
-        elif not keyboard.is_pressed("down"):
-            down_key_pressed = False
+            if keyboard.is_pressed("up") and select > 0 and not up_key_pressed:
+                select -= 1
+                up_key_pressed = True
+            
+            elif not keyboard.is_pressed("up"):
+                up_key_pressed = False
 
-        if keyboard.is_pressed("right") and not right_key_pressed:
-            path.append(directories[select])
-            try:
-                os.listdir("/".join(path)+"/")
-            except NotADirectoryError as e:
-                os.startfile("/".join(path))
+            if keyboard.is_pressed("down") and select < len(directories)-1 and not down_key_pressed:
+                select += 1
+                down_key_pressed = True
+            
+            elif not keyboard.is_pressed("down"):
+                down_key_pressed = False
+
+            if keyboard.is_pressed("right") and not right_key_pressed:
+                path.append(directories[select])
+                try:
+                    os.listdir("/".join(path)+"/")
+                except NotADirectoryError as e:
+                    os.startfile("/".join(path))
+                    path.pop()
+                select = 0
+                right_key_pressed = True
+            
+            elif not keyboard.is_pressed("right"):
+                right_key_pressed = False
+
+            if keyboard.is_pressed("left") and not left_key_pressed and len(path) != 0:
                 path.pop()
-            select = 0
-            right_key_pressed = True
-        
-        elif not keyboard.is_pressed("right"):
-            right_key_pressed = False
+                select = 0
+                left_key_pressed = True
+            
+            elif not keyboard.is_pressed("left"):
+                left_key_pressed = False
 
-        if keyboard.is_pressed("left") and not left_key_pressed and len(path) != 0:
-            path.pop()
-            select = 0
-            left_key_pressed = True
-        
-        elif not keyboard.is_pressed("left"):
-            left_key_pressed = False
+            if keyboard.is_pressed("esc") and not esc_pressed:
+                running = False
+
+            elif not keyboard.is_pressed("esc"):
+                esc_pressed = False
 
         output(screen)
         time.sleep(0.001)
 
-        if keyboard.is_pressed("esc") and not esc_pressed:
-            running = False
-
-        elif not keyboard.is_pressed("esc"):
-            esc_pressed = False
-
-
 
 def to_do_screen():
+
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
 
     to_do_data = get_to_do_data()
     size = os.get_terminal_size()
@@ -395,6 +428,10 @@ def to_do_screen():
     running = True
 
     while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines
@@ -402,7 +439,8 @@ def to_do_screen():
         screen = []
         start_element = select-1
 
-        if keyboard.is_pressed("shift"):
+        
+        if keyboard.is_pressed("shift") and active_window == current_window:
             makeScreen(screen, width, height-1)
             shift_key_pressed = True
         else:
@@ -460,52 +498,55 @@ def to_do_screen():
             increase_rgb[2] = 1
             rgb[2] = 0
 
-        if keyboard.is_pressed("esc"):
-            running = False
-
-        if keyboard.is_pressed("del") and not del_key_pressed:
-            to_do_data.pop(select-1)
-            if select > len(to_do_data):
-                select = len(to_do_data)
-            del_key_pressed = True
-        elif not keyboard.is_pressed("del"):
-            del_key_pressed = False
-
-        if keyboard.is_pressed("insert") and not insert_key_pressed:
-            to_do_data.insert(select,["","0"])
-            insert_key_pressed = True
-        elif not keyboard.is_pressed("insert"):
-            insert_key_pressed = False
-
-        if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
-            select -= 1
-            up_key_pressed = True
         
-        elif not keyboard.is_pressed("up"):
-            up_key_pressed = False
+        if active_window == current_window:
 
-        if keyboard.is_pressed("down") and select < len(to_do_data) and not down_key_pressed:
-            select += 1
-            down_key_pressed = True
-        
-        elif not keyboard.is_pressed("down"):
-            down_key_pressed = False
+            if keyboard.is_pressed("esc"):
+                running = False
 
-        if keyboard.is_pressed("enter") and not enter_key_pressed:
-            if to_do_data[select-1][1] == "1":
-                to_do_data[select-1][1] = "0"
-            elif to_do_data[select-1][1] == "0":
-                to_do_data[select-1][1] = "1"
-            enter_key_pressed = True
-        
-        elif not keyboard.is_pressed("enter"):
-            enter_key_pressed = False
+            if keyboard.is_pressed("del") and not del_key_pressed:
+                to_do_data.pop(select-1)
+                if select > len(to_do_data):
+                    select = len(to_do_data)
+                del_key_pressed = True
+            elif not keyboard.is_pressed("del"):
+                del_key_pressed = False
 
-        if shift_key_pressed:
+            if keyboard.is_pressed("insert") and not insert_key_pressed:
+                to_do_data.insert(select,["","0"])
+                insert_key_pressed = True
+            elif not keyboard.is_pressed("insert"):
+                insert_key_pressed = False
+
+            if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
+                select -= 1
+                up_key_pressed = True
             
-            text = input(" " + str(select) + ": ")
-            to_do_data[select-1][0] = text
-            enter_key_pressed = True
+            elif not keyboard.is_pressed("up"):
+                up_key_pressed = False
+
+            if keyboard.is_pressed("down") and select < len(to_do_data) and not down_key_pressed:
+                select += 1
+                down_key_pressed = True
+            
+            elif not keyboard.is_pressed("down"):
+                down_key_pressed = False
+
+            if keyboard.is_pressed("enter") and not enter_key_pressed:
+                if to_do_data[select-1][1] == "1":
+                    to_do_data[select-1][1] = "0"
+                elif to_do_data[select-1][1] == "0":
+                    to_do_data[select-1][1] = "1"
+                enter_key_pressed = True
+            
+            elif not keyboard.is_pressed("enter"):
+                enter_key_pressed = False
+
+            if shift_key_pressed:
+                
+                text = input(" " + str(select) + ": ")
+                to_do_data[select-1][0] = text
+                enter_key_pressed = True
 
         output(screen)
         time.sleep(0.01)
@@ -516,6 +557,9 @@ def to_do_screen():
 def main_screen():
     """The main menu"""
 
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+    
     os.system("")
     size = os.get_terminal_size()
     width = size.columns
@@ -541,6 +585,9 @@ def main_screen():
     running = True
 
     while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
 
         size = os.get_terminal_size()
         width = size.columns
@@ -583,31 +630,32 @@ def main_screen():
             increase_rgb[2] = 1
             rgb[2] = 0
 
-        if keyboard.is_pressed("up") and select > 0 and not up_pressed:
-            select -= 1
-            up_pressed = True
-        elif not keyboard.is_pressed("up"):
-            up_pressed = False
-        
-        if keyboard.is_pressed("down") and select < len(options)-1 and not down_pressed:
-            select += 1
-            down_pressed = True
-        elif not keyboard.is_pressed("down"):
-            down_pressed = False
+        if active_window == current_window:
+
+            if keyboard.is_pressed("up") and select > 0 and not up_pressed:
+                select -= 1
+                up_pressed = True
+            elif not keyboard.is_pressed("up"):
+                up_pressed = False
+            
+            if keyboard.is_pressed("down") and select < len(options)-1 and not down_pressed:
+                select += 1
+                down_pressed = True
+            elif not keyboard.is_pressed("down"):
+                down_pressed = False
+
+            if keyboard.is_pressed("enter"):
+                screens[select]()
+                esc_pressed = True
+
+            if keyboard.is_pressed("esc") and not esc_pressed:
+                running = False
+
+            elif not keyboard.is_pressed("esc"):
+                esc_pressed = False
 
         output(screen)
         time.sleep(0.001)
-
-        if keyboard.is_pressed("enter"):
-            screens[select]()
-            esc_pressed = True
-
-        if keyboard.is_pressed("esc") and not esc_pressed:
-            running = False
-
-        elif not keyboard.is_pressed("esc"):
-            esc_pressed = False
-
 
 
 if __name__ == "__main__":
