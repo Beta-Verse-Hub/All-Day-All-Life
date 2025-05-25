@@ -68,6 +68,12 @@ def makeScreen(screen, width, height):
             
 
 
+def about_screen():
+    with open("window 10.txt", "r", encoding="UTF-8") as logo:
+        logo = logo.read()
+        print("\033[38;2;0;0;255m"+str(logo)+"\033[0m")
+
+
 def pipes_screen():
     
     size = os.get_terminal_size()
@@ -153,7 +159,7 @@ def pipes_screen():
                 running = False
 
         output(screen)
-        time.sleep(0.001)
+        time.sleep(0.01)
 
 
 def dvd_screen():
@@ -276,8 +282,6 @@ def terminal_screen():
 
     while running:
 
-        os.system("cls")
-
         size = os.get_terminal_size()
         width = size.columns
         height = size.lines
@@ -287,7 +291,9 @@ def terminal_screen():
         makeScreen(screen, width, height)
 
         formatted_path = "\\".join(path)+"\\"
-        a = input("\033[48;2;255;255;0m\033[38;2;0;0;0m" + formatted_path + " \033[0m" + "\033[38;2;255;255;0m\033[48;2;0;255;0m\u259B\033[0m" + "\033[38;2;0;255;0m\033[48;2;255;255;0m\u259F\033[0m")
+        command = input("\033[48;2;255;255;0m\033[38;2;0;0;0m" + formatted_path + " \033[0m" + "\033[48;2;255;255;0m\033[38;2;0;0;0m" + "\u25BA" + " \033[0m")
+
+        os.system(command)
 
         time.sleep(0.001)
 
@@ -565,7 +571,8 @@ def main_screen():
     width = size.columns
     height = size.lines
 
-    options_and_screens = {"[ ] To-do List" : to_do_screen,
+    options_and_screens = {"[ ] About" : about_screen,
+                           "[ ] To-do List" : to_do_screen,
                            "[ ] Terminal" : terminal_screen,
                            "[ ] File Manager" : file_manager_screen,
                            "[ ] DVD" : dvd_screen,
@@ -645,6 +652,7 @@ def main_screen():
                 down_pressed = False
 
             if keyboard.is_pressed("enter"):
+                os.system("cls")
                 screens[select]()
                 esc_pressed = True
 
