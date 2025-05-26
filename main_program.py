@@ -3,6 +3,9 @@ import keyboard
 import time
 import random
 import ctypes
+import sys
+import platform
+import threading
 from pynput.mouse import Controller, Button
 
 
@@ -65,13 +68,147 @@ def makeScreen(screen, width, height):
         screen.append([])
         for x in range(width):
             screen[y].append(" ")
-            
+
+
+class Vertical_Text():
+
+    def __init__(self, width:int):
+        self.length = random.randint(7, 17)
+        self.characters = []
+        for i in range(self.length):
+            self.characters.append(chr(random.randint(32, 126)))
+        self.position = [random.randint(0, width-1), -self.length]
+
+    def move(self, height:int):
+        self.position[1] += 1
+        if self.position[1] > height-1:
+            return True
+        return False
+    
+    def add_to_screen(self, screen:list):
+        for i in range(len(self.characters)):
+            try:
+                if self.position[1]+i >-1:
+                    screen[self.position[1]+i][self.position[0]] = "\033[38;2;0;255;0m" + self.characters[i] + "\033[0m"
+            except IndexError as e:
+                break
+
+
+
+def matrix_screen():
+    
+    global texts1, texts2, texts3
+    global spawn_a_text
+    global screen
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
+    screen = []
+    running = True
+
+    texts1 = texts2 = texts3 = []
+    spawn_a_text = 0
+
+    mthread1 = threading.Thread(target=matrix_thread_1, args=(width, height, screen, ), daemon=True)
+    mthread1.start()
+
+    mthread2 = threading.Thread(target=matrix_thread_2, args=(width, height, screen, ), daemon=True)
+    mthread2.start()
+
+    mthread3 = threading.Thread(target=matrix_thread_3, args=(width, height, screen, ), daemon=True)
+    mthread3.start()
+
+    while running:
+
+        size = os.get_terminal_size()
+        width = size.columns
+        height = size.lines      
+
+        screen = []
+        makeScreen(screen, width, height)
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+
+        spawn_a_text = random.randint(0, 6)
+        
+        if active_window == current_window:
+
+            if keyboard.is_pressed("esc"):
+                running = False
+
+        output(screen)
+        time.sleep(0.001)
+
+    mthread1.join()
+    mthread2.join()
+    mthread3.join()
+
+
+def matrix_thread_1(width, height, screen):
+
+    if spawn_a_text in [0,3]:
+        texts1.append(Vertical_Text(width))
+    
+    at_end = []
+    for i in range(len(texts1)):
+        if texts1[i].move(height):
+            at_end.append(i)
+        texts1[i].add_to_screen(screen)
+        
+    for i in range(len(at_end)-1, -1, -1):
+        texts1.pop(i)
+
+
+def matrix_thread_2(width, height, screen):
+
+    if spawn_a_text in [1,4]:
+        texts2.append(Vertical_Text(width))
+    
+    at_end = []
+    for i in range(len(texts1)):
+        if texts2[i].move(height):
+            at_end.append(i)
+        texts2[i].add_to_screen(screen)
+        
+    for i in range(len(at_end)-1, -1, -1):
+        texts2.pop(i)
+
+
+def matrix_thread_3(width, height, screen):
+
+    if spawn_a_text in [2,5]:
+        texts3.append(Vertical_Text(width))
+    
+    at_end = []
+    for i in range(len(texts1)):
+        if texts3[i].move(height):
+            at_end.append(i)
+        texts3[i].add_to_screen(screen)
+        
+    for i in range(len(at_end)-1, -1, -1):
+        texts3.pop(i)
 
 
 def about_screen():
+
     with open("window 10.txt", "r", encoding="UTF-8") as logo:
         logo = logo.read()
         print("\033[38;2;0;0;255m"+str(logo)+"\033[0m")
+    
+    info = {"OS" : platform.system() + platform.release() + platform.version(),
+            "HOST" : platform.node(),
+            }
+    for i in list(info.keys()):
+        print(i, info[i])
+    
+    while not keyboard.is_pressed("esc"):
+        pass
 
 
 def pipes_screen():
@@ -577,6 +714,7 @@ def main_screen():
                            "[ ] File Manager" : file_manager_screen,
                            "[ ] DVD" : dvd_screen,
                            "[ ] Pipes" : pipes_screen,
+                           "[ ] Matrix" : matrix_screen,
                            "[ ] Auto Clicker" : auto_clicker}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
