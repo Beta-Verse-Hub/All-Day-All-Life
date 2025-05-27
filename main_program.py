@@ -5,7 +5,7 @@ import random
 import ctypes
 import sys
 import platform
-import threading
+import subprocess
 from pynput.mouse import Controller, Button
 
 
@@ -48,6 +48,26 @@ def set_to_do_data(to_do_data):
         data.truncate()
         data.write("\n".join(modified_data))
     
+
+def colorise_logo(logo):
+    
+    logo = str(logo)
+    logo = list(logo.split("-"))
+    new_logo = ""
+
+    for i in logo:
+        if i == "":
+            continue
+        if not (i[0] in ["m",";"]):
+            new_logo += i
+        elif not (i[0] in ["m"]):
+            j = list(i.split(";"))
+            new_logo += f"\033[38;2;{ j[1] };{ j[2] };{ j[3] }m"
+        else:
+            new_logo += f"\033[0m"
+
+
+    return new_logo
 
 
 def output(screen):
@@ -96,10 +116,6 @@ class Vertical_Text():
 
 
 def matrix_screen():
-    
-    global texts1, texts2, texts3
-    global spawn_a_text
-    global screen
 
     size = os.get_terminal_size()
     width = size.columns
@@ -111,17 +127,8 @@ def matrix_screen():
     screen = []
     running = True
 
-    texts1 = texts2 = texts3 = []
+    texts = []
     spawn_a_text = 0
-
-    mthread1 = threading.Thread(target=matrix_thread_1, args=(width, height, screen, ), daemon=True)
-    mthread1.start()
-
-    mthread2 = threading.Thread(target=matrix_thread_2, args=(width, height, screen, ), daemon=True)
-    mthread2.start()
-
-    mthread3 = threading.Thread(target=matrix_thread_3, args=(width, height, screen, ), daemon=True)
-    mthread3.start()
 
     while running:
 
@@ -136,7 +143,19 @@ def matrix_screen():
         current_window = kernel32.GetConsoleWindow()
 
         spawn_a_text = random.randint(0, 6)
-        
+                
+        if spawn_a_text < 2:
+            texts.append(Vertical_Text(width))
+            
+            at_end = []
+            for i in range(len(texts)):
+                if texts[i].move(height):
+                    at_end.append(i)
+                texts[i].add_to_screen(screen)
+                
+            for i in range(len(at_end)-1, -1, -1):
+                texts.pop(i)
+
         if active_window == current_window:
 
             if keyboard.is_pressed("esc"):
@@ -145,61 +164,14 @@ def matrix_screen():
         output(screen)
         time.sleep(0.001)
 
-    mthread1.join()
-    mthread2.join()
-    mthread3.join()
-
-
-def matrix_thread_1(width, height, screen):
-
-    if spawn_a_text in [0,3]:
-        texts1.append(Vertical_Text(width))
-    
-    at_end = []
-    for i in range(len(texts1)):
-        if texts1[i].move(height):
-            at_end.append(i)
-        texts1[i].add_to_screen(screen)
-        
-    for i in range(len(at_end)-1, -1, -1):
-        texts1.pop(i)
-
-
-def matrix_thread_2(width, height, screen):
-
-    if spawn_a_text in [1,4]:
-        texts2.append(Vertical_Text(width))
-    
-    at_end = []
-    for i in range(len(texts1)):
-        if texts2[i].move(height):
-            at_end.append(i)
-        texts2[i].add_to_screen(screen)
-        
-    for i in range(len(at_end)-1, -1, -1):
-        texts2.pop(i)
-
-
-def matrix_thread_3(width, height, screen):
-
-    if spawn_a_text in [2,5]:
-        texts3.append(Vertical_Text(width))
-    
-    at_end = []
-    for i in range(len(texts1)):
-        if texts3[i].move(height):
-            at_end.append(i)
-        texts3[i].add_to_screen(screen)
-        
-    for i in range(len(at_end)-1, -1, -1):
-        texts3.pop(i)
-
 
 def about_screen():
 
-    with open("window 10.txt", "r", encoding="UTF-8") as logo:
+    with open("Logos/Windows11.txt", "r", encoding="UTF-8") as logo:
         logo = logo.read()
-        print("\033[38;2;0;0;255m"+str(logo)+"\033[0m")
+        logo = colorise_logo(logo)
+        print(logo)
+
     
     info = {"OS" : platform.system() + platform.release() + platform.version(),
             "HOST" : platform.node(),
