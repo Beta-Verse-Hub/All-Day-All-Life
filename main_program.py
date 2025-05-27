@@ -112,6 +112,11 @@ class Vertical_Text():
                     screen[self.position[1]+i][self.position[0]] = "\033[38;2;0;255;0m" + self.characters[i] + "\033[0m"
             except IndexError as e:
                 break
+            finally:
+                try:
+                    screen[self.position[1]-1][self.position[0]] = " "
+                except IndexError as e:
+                    break
 
 
 
@@ -147,14 +152,14 @@ def matrix_screen():
         if spawn_a_text < 2:
             texts.append(Vertical_Text(width))
             
-            at_end = []
-            for i in range(len(texts)):
-                if texts[i].move(height):
-                    at_end.append(i)
-                texts[i].add_to_screen(screen)
-                
-            for i in range(len(at_end)-1, -1, -1):
-                texts.pop(i)
+        at_end = []
+        for i in range(len(texts)):
+            if texts[i].move(height):
+                at_end.append(i)
+            texts[i].add_to_screen(screen)
+            
+        for i in range(len(at_end)-1, -1, -1):
+            texts.pop(i)
 
         if active_window == current_window:
 
@@ -162,7 +167,7 @@ def matrix_screen():
                 running = False
 
         output(screen)
-        time.sleep(0.001)
+        time.sleep(0.01)
 
 
 def about_screen():
@@ -205,13 +210,14 @@ def pipes_screen():
 
     direction = [[0,1],[0,1]]
     pos = [random.randint(1,width-1),random.randint(1,height-1)]
-    directionint = 2
+    directionint = a = 2
     directionint_to_direction = {
         "1":[-1, 0],
         "2":[ 0,-1],
         "3":[ 1, 0],
         "4":[ 0, 1]
     }
+    length_need_to_be_travelled = 1
 
     """
         2
@@ -236,7 +242,9 @@ def pipes_screen():
         
         direction[0] = direction[1]
 
-        a = random.randint(1,15)
+        if length_need_to_be_travelled == 0:
+            length_need_to_be_travelled += 1
+            a = random.randint(1,4)
         
         if (directionint == 1 and a == 3) or (directionint == 3 and a == 1) or (directionint == 2 and a == 4) or (directionint == 4 and a == 2):
             a = directionint
@@ -244,23 +252,24 @@ def pipes_screen():
         if a == directionint or a > 4:
             pos[0] += direction[0][0]
             pos[1] += direction[0][1]
+            length_need_to_be_travelled -= 1
         else:
+            length_need_to_be_travelled = random.randint(3,15)
             directionint = a
             direction[1] = directionint_to_direction[str(directionint)]
             
-        if pos[0] > width-2:
-            pos[0] = 1
-        if pos[0] < 1:
-            pos[0] = width-2
-        if pos[1] > height-2:
-            pos[1] = 1
-        if pos[1] < 1:
-            pos[1] = height-2
+        if pos[0] > width-1:
+            pos[0] = 0
+        if pos[0] < 0:
+            pos[0] = width-1
+        if pos[1] > height-1:
+            pos[1] = 0
+        if pos[1] < 0:
+            pos[1] = height-1
 
         for i in range(len(pipes)):
             if direction in all_directions[i]:
                 screen[pos[1]][pos[0]] = all_pipes[i]
-
         
         if active_window == current_window:
 
@@ -294,8 +303,8 @@ def dvd_screen():
         active_window = user32.GetForegroundWindow()
         current_window = kernel32.GetConsoleWindow()
 
-        highest_dvd_x_pos = width-4
-        highest_dvd_y_pos = height-2
+        highest_dvd_x_pos = width-3
+        highest_dvd_y_pos = height-1
 
         screen = []
 
@@ -319,13 +328,13 @@ def dvd_screen():
 
         if dvd_pos[0] > highest_dvd_x_pos:
             dvd_pos[0] = highest_dvd_x_pos
-        elif dvd_pos[0] < 1:
-            dvd_pos[0] = 1
+        elif dvd_pos[0] < 0:
+            dvd_pos[0] = 0
 
         if dvd_pos[1] > highest_dvd_y_pos:
             dvd_pos[1] = highest_dvd_y_pos
-        elif dvd_pos[1] < 1:
-            dvd_pos[1] = 1
+        elif dvd_pos[1] < 0:
+            dvd_pos[1] = 0
 
         screen[dvd_pos[1]][dvd_pos[0]] = colors[color_number] + "D" + "\033[0m"
         screen[dvd_pos[1]][dvd_pos[0]+1] = colors[color_number] + "V" + "\033[0m"
@@ -338,7 +347,7 @@ def dvd_screen():
                 running = False
 
         output(screen)
-        time.sleep(0.07)
+        time.sleep(0.03)
 
 
 def auto_clicker():
