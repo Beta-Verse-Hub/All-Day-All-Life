@@ -93,7 +93,7 @@ def makeScreen(screen, width, height):
 class Vertical_Text():
 
     def __init__(self, width:int):
-        self.length = random.randint(7, 17)
+        self.length = random.randint(7, 20)
         self.characters = []
         for i in range(self.length):
             self.characters.append(chr(random.randint(32, 126)))
@@ -149,7 +149,7 @@ def matrix_screen():
 
         spawn_a_text = random.randint(0, 6)
                 
-        if spawn_a_text < 2:
+        if spawn_a_text < 1:
             texts.append(Vertical_Text(width))
             
         at_end = []
@@ -172,18 +172,22 @@ def matrix_screen():
 
 def about_screen():
 
-    with open("Logos/Windows11.txt", "r", encoding="UTF-8") as logo:
+    with open(f"Logos/Windows{platform.release()}.txt", "r", encoding="UTF-8") as logo:
         logo = logo.read()
         logo = colorise_logo(logo)
         print(logo)
 
     
-    info = {"OS" : platform.system() + platform.release() + platform.version(),
-            "HOST" : platform.node(),
+    info = {"OS"          : platform.system() + " " + platform.release() + " " + platform.version(),
+            "HOST"        : platform.node(),
+            "ARCHITECTURE": platform.machine(),
+            "PROCESSOR"   : platform.processor(),
+            "USER"        : os.getenv("USER"),
+            "SHELL"       : os.getenv("SHELL")
             }
     for i in list(info.keys()):
         print(i, info[i])
-    
+
     while not keyboard.is_pressed("esc"):
         pass
 
@@ -199,7 +203,7 @@ def pipes_screen():
 
     pipes = {
         "║" : [ [[ 0, 1], [ 0, 1]], [[ 0,-1], [ 0,-1]] ],
-        "=" : [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ],
+        "═" : [ [[ 1, 0], [ 1, 0]], [[-1, 0], [-1, 0]] ],
         "╔" : [ [[ 0,-1], [ 1, 0]], [[-1, 0], [ 0, 1]] ],
         "╗" : [ [[ 0,-1], [-1, 0]], [[ 1, 0], [ 0, 1]] ],
         "╚" : [ [[ 0, 1], [ 1, 0]], [[-1, 0], [ 0,-1]] ],
