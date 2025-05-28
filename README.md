@@ -1,5 +1,5 @@
 # ALL DAY ALL LIFE
-Ever wanted to run the pipes.sh, cmatrix, etc on your screen but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc.
+Ever wanted to run the pipes.sh, cmatrix, etc on your terminal but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc. with a cli-based interface
 
 ## Installation
 To use this program, you will need to have the following dependencies installed:
