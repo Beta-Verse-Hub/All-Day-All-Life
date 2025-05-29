@@ -7,11 +7,19 @@ import random
 user32 = ctypes.windll.user32
 kernel32 = ctypes.windll.kernel32
 
+active_window = user32.GetForegroundWindow()
+current_window = kernel32.GetConsoleWindow()
+
 running = True
+
+windows = {"main_window" : current_window}
 
 while running:
     
-    print(ctypes.windll.user32.FindWindowW(None, "smth"))
+    active_window = user32.GetForegroundWindow()
+    current_window = kernel32.GetConsoleWindow()
+
+    print(windows)
     width = ctypes.windll.user32.GetSystemMetrics(0)
     height = ctypes.windll.user32.GetSystemMetrics(1)
     print(width, height)
@@ -19,20 +27,27 @@ while running:
 
     user32.ShowWindow(ctypes.windll.user32.FindWindowW(None, "smth"), 3)
 
-    active_window = user32.GetForegroundWindow()
-    current_window = kernel32.GetConsoleWindow()
-
     if keyboard.is_pressed("alt"):
         script_path = os.path.abspath(__file__)
         script_directory = os.path.dirname(script_path)
 
-        os.system('start "smth"')
+        os.system(f'start "window_{len(windows)}"')
+        windows[f"window_{len(windows)}"] = ctypes.windll.user32.FindWindowW(None, f"window_{len(windows)}")
 
-    if  keyboard.is_pressed("shift"):
-        ctypes.windll.user32.MoveWindow(a, (width+14)//2, (height-14)//2, (width)//2, (height-28)//2, True)
+    if keyboard.is_p("shift"):
+        if keyboard.is_pressed("left"):
+            ctypes.windll.user32.MoveWindow(active_window, 0, 0, (width+14)//2, (height-28), True)
+        if keyboard.is_pressed("right"):
+            ctypes.windll.user32.MoveWindow(active_window, (width)//2, 0, (width+14)//2, (height-28), True)
+        if keyboard.is_pressed("up"):
+            ctypes.windll.user32.MoveWindow(active_window, 0, 0, (width+14), (height-14)//2, True)
+        if keyboard.is_pressed("down"):
+            ctypes.windll.user32.MoveWindow(active_window, 0, (height)//2, (width+14), (height-28)//2, True)
     
-    if  keyboard.is_pressed("`"):
+    if keyboard.is_pressed("`"):
         running = False
 
-
+    for i in list(windows.keys()):
+        windows[i] = ctypes.windll.user32.FindWindowW(None, f"window_{len(windows)}")
+    
     time.sleep(0.01)
