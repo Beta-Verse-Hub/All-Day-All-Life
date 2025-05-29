@@ -1,44 +1,38 @@
 import os
 import time
-import threading
 import keyboard
 import ctypes
+import random
 
-key = None
+user32 = ctypes.windll.user32
+kernel32 = ctypes.windll.kernel32
+
 running = True
-
-def key_listener_thread_func():
-    global key
-    while True:
-        key = keyboard.read_key(suppress=True)
-
-listener_thread = threading.Thread(target=key_listener_thread_func, daemon=True)
-listener_thread.start()
-
-key_detected = False
 
 while running:
     
     print(ctypes.windll.user32.FindWindowW(None, "smth"))
+    width = ctypes.windll.user32.GetSystemMetrics(0)
+    height = ctypes.windll.user32.GetSystemMetrics(1)
+    print(width, height)
     a = ctypes.windll.user32.FindWindowW(None, "smth")
 
-    if key == "alt":
+    user32.ShowWindow(ctypes.windll.user32.FindWindowW(None, "smth"), 3)
+
+    active_window = user32.GetForegroundWindow()
+    current_window = kernel32.GetConsoleWindow()
+
+    if keyboard.is_pressed("alt"):
         script_path = os.path.abspath(__file__)
         script_directory = os.path.dirname(script_path)
 
         os.system('start "smth"')
-        key_detected = True
 
-    if key == "shift":
-        ctypes.windll.user32.MoveWindow(a, 2, 2, 100, 100, False)
-        key_detected = True
+    if  keyboard.is_pressed("shift"):
+        ctypes.windll.user32.MoveWindow(a, (width+14)//2, (height-14)//2, (width)//2, (height-28)//2, True)
     
-    if key == "`":
+    if  keyboard.is_pressed("`"):
         running = False
-        key_detected = True
+
 
     time.sleep(0.01)
-
-    if key_detected:
-        key = None
-        key_detected = False
