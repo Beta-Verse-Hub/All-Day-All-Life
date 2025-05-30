@@ -688,6 +688,9 @@ def main_screen():
     user32 = ctypes.windll.user32
     kernel32 = ctypes.windll.kernel32
     
+    unique_title = sys.argv[1]
+    kernel32.SetConsoleTitleW(unique_title)
+
     os.system("")
     size = os.get_terminal_size()
     width = size.columns
