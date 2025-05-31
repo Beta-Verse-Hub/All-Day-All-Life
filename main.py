@@ -1,34 +1,13 @@
+#importing important libraries
 import os
 import time
 import keyboard
 import ctypes
 from ctypes import wintypes
-import threading
 
 
-
-global windows
-global running
-global FindWindowW
-
-
-
-def check_for_windows():
-    while running:
-
-        remove_windows = []
-        
-        for i in range(len(windows)):
-            hwnd = FindWindowW(None, str(list(windows.keys())[i]+''))
-            if hwnd:
-                remove_windows.append(i)
-        
-        for i in reversed(remove_windows):
-            windows.pop(f"window_{i}")
-
-
-def position_window(window, main_grid, new_grid, screen_width, screen_height):    
-    user32.MoveWindow(window, (new_grid[0][0]*(screen_width//main_grid[0]))-5, (new_grid[0][1]*(screen_height//main_grid[1]))-1, ((screen_width+14)//main_grid[0])+10, ((screen_height+14)//main_grid[1])+2, True)
+def position_window(window, main_grid, new_grid, screen_width, screen_height):
+    user32.MoveWindow(window, (new_grid[0][0]*(screen_width//main_grid[0]))-5, (new_grid[0][1]*(screen_height//main_grid[1]))-1, (new_grid[1][0]*(screen_width+14)//main_grid[0])+10, (new_grid[1][1]*(screen_height+14)//main_grid[1])+2, True)
 
 
 
@@ -47,9 +26,9 @@ os.system('echo "\033]0;window_0\007"')
 running = True
 
 windows = {"window_0" : [[0,0], [1,2]]}
-grid = [3,2]
-
-checking_window_thread = threading.Thread(target=check_for_windows, daemon=True)
+with open("grid.txt", "r") as grid_data:
+    grid_data = grid_data.readlines()
+    grid = [int(grid_data[0]), int(grid_data[1])]
 
 up_key_pressed = True
 down_key_pressed = True
@@ -59,7 +38,7 @@ right_key_pressed = True
 
 
 while running:
-    
+
     active_window = user32.GetForegroundWindow()
     current_window = kernel32.GetConsoleWindow()
 
@@ -127,7 +106,7 @@ while running:
                 print('Please enter an integer')
 
 
-    if keyboard.is_pressed("-"):
+    if keyboard.is_pressed("tab"):
         if keyboard.is_pressed("left") and not left_key_pressed:
             windows[buffer.value] = [[windows[buffer.value][0][0]-1, windows[buffer.value][0][1]], windows[buffer.value][1]]
             position_window(active_window, grid, windows[buffer.value], width, height)
@@ -161,7 +140,7 @@ while running:
             down_key_pressed = False
 
 
-    if keyboard.is_pressed("="):
+    if keyboard.is_pressed("alt"):
         if keyboard.is_pressed("left") and not left_key_pressed and windows[buffer.value][1][0] > 1:
             windows[buffer.value] = [windows[buffer.value][0], [windows[buffer.value][1][0]-1, windows[buffer.value][1][1]]]
             position_window(active_window, grid, windows[buffer.value], width, height)
@@ -199,5 +178,3 @@ while running:
         running = False
     
     time.sleep(0.01)
-
-checking_window_thread.join()

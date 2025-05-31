@@ -7,7 +7,7 @@
 
 1
 hhshshhs
-0
+1
 hahahaha
 1
 14
@@ -26,9 +26,9 @@ mmmm
 0
 2121
 0
-
+00
 0
 Add a file manager
-0
+1
 Add window management
-0
+1
