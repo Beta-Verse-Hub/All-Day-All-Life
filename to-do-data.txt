@@ -26,9 +26,9 @@ mmmm
 0
 2121
 0
-Add a terminal
+
 0
 Add a file manager
 0
-Add window management with lua
+Add window management
 0

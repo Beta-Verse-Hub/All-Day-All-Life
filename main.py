@@ -3,8 +3,8 @@ import time
 import keyboard
 import ctypes
 from ctypes import wintypes
-import random
 import threading
+
 
 
 global windows
@@ -12,19 +12,24 @@ global running
 global FindWindowW
 
 
+
 def check_for_windows():
     while running:
+
         remove_windows = []
+        
         for i in range(len(windows)):
-            hwnd = FindWindowW(None, str(list(windows.keys())[i]+' - "C:\\Users\\DELL\\OneDrive\\Desktop\\PythonProjects\\All Day All Life\\main_program.py"'))
-            if hwnd and list(windows.keys())[i] != "window_0":
+            hwnd = FindWindowW(None, str(list(windows.keys())[i]+''))
+            if hwnd:
                 remove_windows.append(i)
+        
         for i in reversed(remove_windows):
             windows.pop(f"window_{i}")
 
-def position_window(window, main_grid, new_grid, screen_width, screen_height):
-    
-    user32.MoveWindow(window, new_grid[0][0], new_grid[0][1], (screen_width+14)*new_grid[1][0]//main_grid[0], (screen_height-28)*new_grid[1][1]//main_grid[1], True)
+
+def position_window(window, main_grid, new_grid, screen_width, screen_height):    
+    user32.MoveWindow(window, (new_grid[0][0]*(screen_width//main_grid[0]))-5, (new_grid[0][1]*(screen_height//main_grid[1]))-1, ((screen_width+14)//main_grid[0])+10, ((screen_height+14)//main_grid[1])+2, True)
+
 
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -42,10 +47,16 @@ os.system('echo "\033]0;window_0\007"')
 running = True
 
 windows = {"window_0" : [[0,0], [1,2]]}
-grid = [2,2]
+grid = [3,2]
 
 checking_window_thread = threading.Thread(target=check_for_windows, daemon=True)
-checking_window_thread.start()
+
+up_key_pressed = True
+down_key_pressed = True
+left_key_pressed = True
+right_key_pressed = True
+
+
 
 while running:
     
@@ -61,46 +72,129 @@ while running:
     width = user32.GetSystemMetrics(0)
     height =  user32.GetSystemMetrics(1)
 
-    user32.ShowWindow(user32.FindWindowW(None, "win"), 3)
+    print(windows, active_window)
 
-    hwnd = FindWindowW(None, "window_1")
+    remove_windows = []
+    for i in range(len(windows)):
+        hwnd = FindWindowW(None, str(list(windows.keys())[i]))
+        select_hwnd = FindWindowW(None, "Select "+str(list(windows.keys())[i]))
+        if hwnd == None and select_hwnd == None and list(windows.keys())[i] != "window_0":
+            remove_windows.append(i)
+        user32.ShowWindow(user32.FindWindowW(None,list(windows.keys())[i]), 3)
 
-    print(windows, active_window, hwnd)
+    for i in reversed(remove_windows):
+        windows.pop(list(windows.keys())[i])
 
-    if keyboard.is_pressed("alt"):
-        script_path = os.path.abspath(__file__)
-        script_directory = os.path.dirname(script_path)
+    if active_window == current_window:
 
-        os.system(f'start "window_{len(windows)}" cmd /k python "{os.path.abspath("main_program.py")}" "window_{len(windows)}"')
-        hwnd = FindWindowW(None, f"window_{len(windows)}")
-        print(hwnd)
-        windows[f"window_{len(windows)}"] = [[1,0], [2,2]]
+        if keyboard.is_pressed("shift"):
+            window_name = input("Give the window title that you want to manage : ")
+            
+            if FindWindowW(None, window_name) == None:
+                os.system(f'start "{window_name}" cmd /k python "{os.path.abspath("main_program.py")}" "{window_name}"')
 
-        while hwnd == None:
-            FindWindowW = user32.FindWindowW
-            FindWindowW.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR]
-            FindWindowW.restype = wintypes.HWND
-            hwnd = FindWindowW(None, f"window_{len(windows)}")
-            print(hwnd, width, height)
-            time.sleep(0.01)
+            hwnd = FindWindowW(None, window_name)
+            print(hwnd)
+            windows[window_name] = [[1,0], [2,2]]
+
+            while hwnd == None:
+                FindWindowW = user32.FindWindowW
+                FindWindowW.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR]
+                FindWindowW.restype = wintypes.HWND
+                hwnd = FindWindowW(None, window_name)
+                print(hwnd, width, height)
+                time.sleep(0.01)
+
+            time.sleep(3)
+            windows[window_name] = [[1,0], [2,2]]
+        
+        if keyboard.is_pressed("ctrl"):
+            try:
+                x_grid = int(input("No of columns in the grid : "))
+                if x_grid < 1:
+                    x_grid = 1
+                    print("Please set the number of columns more than 1")
+                    print("Number of columns have been set to 1 for now")
+                
+                y_grid = int(input("No of rows in the grid : "))
+                if y_grid < 1:
+                    y_grid = 1
+                    print("Please set the number of rows more than 1")
+                    print("Number of rows have been set to 1 for now")
+
+                grid = [x_grid, y_grid]
+            except ValueError as e:
+                print('Please enter an integer')
+
 
     if keyboard.is_pressed("-"):
-        if keyboard.is_pressed("left"):
-            windows[buffer.value] = [[windows[buffer.value][0][0]-1, windows[buffer.value][0][1]],windows[buffer.value][1]]
+        if keyboard.is_pressed("left") and not left_key_pressed:
+            windows[buffer.value] = [[windows[buffer.value][0][0]-1, windows[buffer.value][0][1]], windows[buffer.value][1]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            left_key_pressed = True
+        elif not keyboard.is_pressed("left"):
+            left_key_pressed = False
+
+        if keyboard.is_pressed("right") and not right_key_pressed:
+            windows[buffer.value] = [[windows[buffer.value][0][0]+1, windows[buffer.value][0][1]], windows[buffer.value][1]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            right_key_pressed = True
+        elif not keyboard.is_pressed("right"):
+            right_key_pressed = False
+
+        if keyboard.is_pressed("up") and not up_key_pressed:
+            windows[buffer.value] = [[windows[buffer.value][0][0], windows[buffer.value][0][1]-1], windows[buffer.value][1]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            up_key_pressed = True
+        elif not keyboard.is_pressed("up"):
+            up_key_pressed = False
+
+        if keyboard.is_pressed("down") and not down_key_pressed:
+            windows[buffer.value] = [[windows[buffer.value][0][0], windows[buffer.value][0][1]+1], windows[buffer.value][1]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            down_key_pressed = True
+        elif not keyboard.is_pressed("down"):
+            down_key_pressed = False
+
+
+    if keyboard.is_pressed("="):
+        if keyboard.is_pressed("left") and not left_key_pressed and windows[buffer.value][1][0] > 1:
+            windows[buffer.value] = [windows[buffer.value][0], [windows[buffer.value][1][0]-1, windows[buffer.value][1][1]]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            left_key_pressed = True
+        elif not keyboard.is_pressed("left"):
+            left_key_pressed = False
+
+        if keyboard.is_pressed("right") and not right_key_pressed:
+            windows[buffer.value] = [windows[buffer.value][0], [windows[buffer.value][1][0]+1, windows[buffer.value][1][1]]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            right_key_pressed = True
+        elif not keyboard.is_pressed("right"):
+            right_key_pressed = False
+
+        if keyboard.is_pressed("up") and not up_key_pressed and windows[buffer.value][1][1] > 1:
+            windows[buffer.value] = [windows[buffer.value][0], [windows[buffer.value][1][0], windows[buffer.value][1][1]-1]]
+            position_window(active_window, grid, windows[buffer.value], width, height)
+            
+            up_key_pressed = True
+        elif not keyboard.is_pressed("up"):
+            up_key_pressed = False
+
+        if keyboard.is_pressed("down") and not down_key_pressed:
+            windows[buffer.value] = [windows[buffer.value][0], [windows[buffer.value][1][0], windows[buffer.value][1][1]+1]]
             position_window(active_window, grid, windows[buffer.value], width, height)
 
-        if keyboard.is_pressed("right"):
-            windows[buffer.value] = [[windows[buffer.value][0][0]+1, windows[buffer.value][0][1]],windows[buffer.value][1]]
-            position_window(active_window, grid, windows[buffer.value], width, height)
+            down_key_pressed = True
+        elif not keyboard.is_pressed("down"):
+            down_key_pressed = False
 
-        if keyboard.is_pressed("up"):
-            windows[buffer.value] = [[windows[buffer.value][0][0], windows[buffer.value][0][1]-1],windows[buffer.value][1]]
-            position_window(active_window, grid, windows[buffer.value], width, height)
 
-        if keyboard.is_pressed("down"):
-            windows[buffer.value] = [[windows[buffer.value][0][0], windows[buffer.value][0][1]+1],windows[buffer.value][1]]
-            position_window(active_window, grid, windows[buffer.value], width, height)
-    
     if keyboard.is_pressed("`"):
         running = False
     
