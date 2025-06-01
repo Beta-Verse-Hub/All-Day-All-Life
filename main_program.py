@@ -6,6 +6,8 @@ import ctypes
 import sys
 import platform
 import subprocess
+import psutil
+import datetime
 from pynput.mouse import Controller, Button
 
 
@@ -172,18 +174,46 @@ def matrix_screen():
 
 def about_screen():
 
-    with open(f"Logos/Windows{platform.release()}.txt", "r", encoding="UTF-8") as logo:
+    with open(f"custom_logo_file_path.txt", "r") as custom_logo_file_path:
+        
+        custom_logo_file_path = custom_logo_file_path.read()
+
+        if custom_logo_file_path and os.path.exists(custom_logo_file_path):
+            logo_file_path = custom_logo_file_path
+        else:
+            logo_file_path = f"Logos/Windows{platform.release()}.txt"
+
+    with open(logo_file_path, "r", encoding="UTF-8") as logo:
         logo = logo.read()
         logo = colorise_logo(logo)
         print(logo)
-
     
-    info = {"OS"          : platform.system() + " " + platform.release() + " " + platform.version(),
-            "HOST"        : platform.node(),
-            "ARCHITECTURE": platform.machine(),
-            "PROCESSOR"   : platform.processor(),
-            "USER"        : os.getenv("USER"),
-            "SHELL"       : os.getenv("SHELL")
+    user32 = ctypes.windll.user32
+
+    width = str(user32.GetSystemMetrics(0))
+    height =  str(user32.GetSystemMetrics(1))
+
+    boot_time_timestamp = psutil.boot_time()
+    boot_time_datetime = datetime.datetime.fromtimestamp(boot_time_timestamp)
+    current_time = datetime.datetime.now()
+    uptime_delta = current_time - boot_time_datetime
+
+    days = uptime_delta.days
+    hours, remainder = divmod(uptime_delta.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    mem = psutil.virtual_memory()
+    total_mem_gb = mem.total / (1024**3)
+    available_mem_gb = mem.available / (1024**3)
+    used_mem_gb = mem.used / (1024**3)
+
+    info = {"OS"                   : platform.system() + " " + platform.release(),
+            "HOST"                 : platform.node(),
+            "UP TIME"              : f"{days} days, {hours} hours, {minutes} minutes",
+            "RESOLUTION"           : width + "x" + height,
+            "ARCHITECTURE"         : platform.machine(),
+            "PROCESSOR"            : platform.processor(),
+            "MEMORY"               : f"{used_mem_gb} GiB / {total_mem_gb} GiB"
             }
     for i in list(info.keys()):
         print(i, info[i])

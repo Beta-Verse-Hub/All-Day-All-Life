@@ -20,3 +20,17 @@ To run the program, simply execute the main_program.py file:
 ```python main_program.py```
 
 This will launch the main menu, where you can select from various options such as "About", "To-do List", "Terminal", "File Manager", "DVD", "Pipes", "Matrix", and "Auto Clicker".
+
+### About
+It is a replica of neofetch but it uses the windows api so it is exclusive for windows.
+You can make a custom logo with this syntax:-
+
+```-;r;g;b- part of the logo -m- -;r2;g2;b2- other part of the logo -m- ...```
+
+-;r;g;b- => set the rgb value in decimals integer.
+part of the logo => the logo's part in ascii art form
+-m- => to stop using the previous color
+
+It uses ANSI sequences to display colored text so using ```-m-``` before each new color and at the end is necessary.
+
+Make the logo in a txt file and save it in the Logos directory
