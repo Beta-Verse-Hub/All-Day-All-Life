@@ -124,52 +124,62 @@ class Vertical_Text():
 
 def matrix_screen():
 
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
+    # size = os.get_terminal_size()
+    # width = size.columns
+    # height = size.lines
 
-    user32 = ctypes.windll.user32
-    kernel32 = ctypes.windll.kernel32
+    # user32 = ctypes.windll.user32
+    # kernel32 = ctypes.windll.kernel32
 
-    screen = []
-    running = True
+    # screen = []
+    # running = True
 
-    texts = []
-    spawn_a_text = 0
+    # texts = []
+    # spawn_a_text = 0
 
-    while running:
+    # while running:
 
-        size = os.get_terminal_size()
-        width = size.columns
-        height = size.lines      
+    #     size = os.get_terminal_size()
+    #     width = size.columns
+    #     height = size.lines      
 
-        screen = []
-        makeScreen(screen, width, height)
+    #     screen = []
+    #     makeScreen(screen, width, height)
 
-        active_window = user32.GetForegroundWindow()
-        current_window = kernel32.GetConsoleWindow()
+    #     active_window = user32.GetForegroundWindow()
+    #     current_window = kernel32.GetConsoleWindow()
 
-        spawn_a_text = random.randint(0, 6)
+    #     spawn_a_text = random.randint(0, 6)
                 
-        if spawn_a_text < 1:
-            texts.append(Vertical_Text(width))
+    #     if spawn_a_text < 1:
+    #         texts.append(Vertical_Text(width))
             
-        at_end = []
-        for i in range(len(texts)):
-            if texts[i].move(height):
-                at_end.append(i)
-            texts[i].add_to_screen(screen)
+    #     at_end = []
+    #     for i in range(len(texts)):
+    #         if texts[i].move(height):
+    #             at_end.append(i)
+    #         texts[i].add_to_screen(screen)
             
-        for i in range(len(at_end)-1, -1, -1):
-            texts.pop(i)
+    #     for i in range(len(at_end)-1, -1, -1):
+    #         texts.pop(i)
 
-        if active_window == current_window:
+    #     if active_window == current_window:
 
-            if keyboard.is_pressed("esc"):
-                running = False
+    #         if keyboard.is_pressed("esc"):
+    #             running = False
 
-        output(screen)
-        time.sleep(0.01)
+    #     output(screen)
+    #     time.sleep(0.01)
+
+    try:
+        # Call the external C++ program
+        subprocess.run(["./matrix_program.exe"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the matrix program: {e}")
+    except FileNotFoundError:
+        print("The matrix program executable was not found.")
+
+
 
 
 def about_screen():
