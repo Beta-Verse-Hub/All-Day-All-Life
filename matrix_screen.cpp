@@ -4,6 +4,7 @@
 #include <ctime>
 #include <string>
 #include <unistd.h>
+#include <conio.h>
 #include <windows.h>
 
 using namespace std;
@@ -78,31 +79,80 @@ public:
         length = rand() % 14 + 7;
         for (int i = 0; i < length; ++i) {
             characters.push_back(static_cast<char>(rand() % (126 - 32 + 1) + 32));
-        }
+        };
         position = {rand() % width, -length};
-    }
+    };
 
     bool move(int height) {
         position[1]++;
-        return position[1] > height - 1; // Return true if it goes out of bounds
-    }
-    void addToScreen(vector<vector<char>> win) {
+        return position[1] > height - 1;
+    };
+
+    vector<vector<char>> addToScreen(vector<vector<char>> win) {
         for (int i = 0; i < characters.size(); i++) {
-            int a = win.size();
-            if( a < position[1]+i ){
+            if( position[1] + i >= 0){
                 win[position[1]+i][position[0]] = characters[i];
-            }
-        }
-    }
+                cout << i;
+            };
+        };
+
+        return win;
+    };
 };
 
 
 
 int main(){
-    int height, width;
-    getTerminalSizeWindows(width, height);
-    vector<vector<char>> screen = makeScreen(width, height);
     
-    display(screen);
+    bool running = true;
+
+    char key;
+    vector<VerticalText> texts = {};
+
+    while (running){
+    
+        
+        int height, width;
+        getTerminalSizeWindows(width, height);
+        vector<vector<char>> screen = makeScreen(width, height);
+
+        cout << "Terminal Size: Width=" << width << ", Height=" << height << endl;
+
+        if (_kbhit()) {
+            key = _getch();
+        }else{
+            key = '0';
+        }
+
+        int spawn_a_text = rand() % 6;
+
+        if(spawn_a_text < 2){
+            texts.push_back(VerticalText(width));
+        };
+
+        vector<int> atEnd = {};
+
+        for(int i = 0; i < texts.size(); i++){
+            VerticalText text = texts.at(i);
+            bool outOfBounds = text.move(height);
+            screen = text.addToScreen(screen);
+            if (outOfBounds)
+            {
+                atEnd.push_back(i);
+            };
+        };
+
+        for(int i = atEnd.size(); i > 0; i--){
+            texts.erase(texts.begin() + atEnd.at(i));
+        };
+
+        display(screen);
+
+        if(key == 27){ // esc
+            running = false;
+        };
+
+        Sleep(1);
+    };
 
 }
