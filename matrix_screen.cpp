@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <ctime>
 #include <string>
-#include <unistd.h>
 #include <conio.h>
 #include <windows.h>
 
@@ -16,7 +15,7 @@ vector<vector<char>> makeScreen(int& width, int& height){
     for(int y = 0; y < height; y++){
         screen.push_back(vector<char>());
 
-        for(int x = 0; x < width; x++){
+        for(int x = 0; x < width-1; x++){
             screen.at(y).push_back(' ');
         };
 
@@ -28,7 +27,7 @@ vector<vector<char>> makeScreen(int& width, int& height){
 
 int display(vector<vector<char>> screen){
 
-    string screenString = "";
+    string screenString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
    
     for(int y = 0; y < screen.size(); y++){
 
@@ -40,11 +39,11 @@ int display(vector<vector<char>> screen){
             screenString += "\n";
         }else{
             screenString.pop_back();
-        }
+        };
 
     };
 
-    cout << screenString;
+    cout << "\033[38;2;0;255;0m" << screenString << "\033[0m";
 
     return 0;
 }
@@ -80,7 +79,7 @@ public:
         for (int i = 0; i < length; ++i) {
             characters.push_back(static_cast<char>(rand() % (126 - 32 + 1) + 32));
         };
-        position = {rand() % width, -length};
+        position = {rand() % width-1, -length};
     };
 
     bool move(int height) {
@@ -90,9 +89,9 @@ public:
 
     vector<vector<char>> addToScreen(vector<vector<char>> win) {
         for (int i = 0; i < characters.size(); i++) {
-            if( position[1] + i >= 0){
+
+            if(position[1] + i >= 0 && position[1]+i < win.size() && position[0] >= 0 && position[0] < win[0].size()-1){
                 win[position[1]+i][position[0]] = characters[i];
-                cout << i;
             };
         };
 
@@ -104,6 +103,8 @@ public:
 
 int main(){
     
+    system("");
+
     bool running = true;
 
     char key;
@@ -115,8 +116,6 @@ int main(){
         int height, width;
         getTerminalSizeWindows(width, height);
         vector<vector<char>> screen = makeScreen(width, height);
-
-        cout << "Terminal Size: Width=" << width << ", Height=" << height << endl;
 
         if (_kbhit()) {
             key = _getch();
@@ -133,7 +132,7 @@ int main(){
         vector<int> atEnd = {};
 
         for(int i = 0; i < texts.size(); i++){
-            VerticalText text = texts.at(i);
+            VerticalText& text = texts.at(i);
             bool outOfBounds = text.move(height);
             screen = text.addToScreen(screen);
             if (outOfBounds)
@@ -142,7 +141,7 @@ int main(){
             };
         };
 
-        for(int i = atEnd.size(); i > 0; i--){
+        for(int i = atEnd.size()-1; i > 0; i--){
             texts.erase(texts.begin() + atEnd.at(i));
         };
 
@@ -152,7 +151,7 @@ int main(){
             running = false;
         };
 
-        Sleep(1);
+        Sleep(5);
     };
 
 }

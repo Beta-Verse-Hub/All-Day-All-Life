@@ -716,6 +716,12 @@ def to_do_screen():
                 to_do_data[select-1][0] = text
                 enter_key_pressed = True
 
+            if keyboard.is_pressed("ctrl"):
+                os.system("cls")
+                print(to_do_data[select-1][0])
+                while active_window == current_window and keyboard.is_pressed("ctrl"):
+                    time.sleep(0.01)
+
         output(screen)
         time.sleep(0.01)
 
