@@ -10,6 +10,16 @@ def position_window(window, main_grid, new_grid, screen_width, screen_height):
     user32.MoveWindow(window, (new_grid[0][0]*(screen_width//main_grid[0]))-5, (new_grid[0][1]*(screen_height//main_grid[1]))-1, (new_grid[1][0]*(screen_width+14)//main_grid[0])+10, (new_grid[1][1]*(screen_height+14)//main_grid[1])+2, True)
 
 
+def print_out_details(windows, active_window):
+    size = os.get_terminal_size()
+    details = "\n"*50
+    details += "-"*size.columns
+    details += f"Active Window ID : {active_window}\n"
+    for i in range(len(windows)):
+        details +=  f" {list(windows.keys())[i]} : {list(windows.values())[i][0]} : {list(windows.values())[i][1]}\n"
+    details += "-"*size.columns
+    print(details, end="")
+
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
 kernel32 = ctypes.windll.kernel32
@@ -51,7 +61,7 @@ while running:
     width = user32.GetSystemMetrics(0)
     height =  user32.GetSystemMetrics(1)
 
-    print(windows, active_window)
+    print_out_details(windows, active_window)
 
     remove_windows = []
     for i in range(len(windows)):
@@ -104,6 +114,9 @@ while running:
                 grid = [x_grid, y_grid]
             except ValueError as e:
                 print('Please enter an integer')
+
+        if keyboard.is_pressed("esc"):
+            running = False
 
 
     if keyboard.is_pressed("tab"):
@@ -172,9 +185,5 @@ while running:
             down_key_pressed = True
         elif not keyboard.is_pressed("down"):
             down_key_pressed = False
-
-
-    if keyboard.is_pressed("`"):
-        running = False
     
     time.sleep(0.01)

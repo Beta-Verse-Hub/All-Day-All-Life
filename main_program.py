@@ -526,10 +526,10 @@ def to_do_screen():
             if y == 0:
                 for x in range(width - 2):
                     try:
-                        screen[y*2+2][x+3]
+                        screen[y*2+1][x+2]
                     except:
                         break
-                    screen[y*2+1][x+1] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+2][x+2] + "\033[0m"
+                    screen[y*2+1][x+1] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+1][x+2] + "\033[0m"
 
         rgb[0] += increase_rgb[0]
         if rgb[0] > 255:

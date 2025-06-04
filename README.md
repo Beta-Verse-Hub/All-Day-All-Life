@@ -19,7 +19,7 @@ To run the program, simply execute the main_program.py file:
 
 ```python main_program.py```
 
-This will launch the main menu, where you can select from various options such as "About", "To-do List", "Terminal", "File Manager", "DVD", "Pipes", "Matrix", and "Auto Clicker".
+This will launch the main menu, where you can select from various options such as "About", "To-do List",  "File Manager", "DVD", "Pipes", "Matrix", and "Auto Clicker".
 
 ### About
 It is a replica of neofetch but it uses the windows api so it is exclusive for windows.
@@ -31,6 +31,17 @@ You can make a custom logo with this syntax:-
 part of the logo => the logo's part in ascii art form
 -m- => to stop using the previous color
 
-It uses ANSI sequences to display colored text so using ```-m-``` before each new color and at the end is necessary.
+It uses ANSI sequences to display colored text, so using ```-m-``` before each new color and at the end is necessary.
 
-Make the logo in a txt file and save it in the Logos directory
+Make the logo in a txt file and save it in the Logos directory.
+
+### To-Do List
+It is a to-do list which stores the data in a txt file in this format:
+
+```
+<the data>
+<ticked(1) or not(0)>
+.
+.
+.
+```
