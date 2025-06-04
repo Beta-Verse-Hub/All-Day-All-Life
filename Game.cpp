@@ -15,6 +15,28 @@ class Player
         vector<int> position = {0,0};
         int dashDistance = 5;
         char character = '0';
+    public:
+        void move(int x, int y, vector<vector<char>> screen){
+            if(position.at(0) == 0 and x == -1){
+                return;
+            }else if(position.at(1) == 0 and y == -1){
+                return;
+            }else if(position.at(0) == screen.at(0).size()-1 and x == 1){
+                return;
+            }else if(position.at(1) == screen.size()-1 and y == 1){
+                return;
+            }
+            position = {position.at(0) + x, position.at(1) + y};
+        }
+
+        void dash(){
+
+        }
+
+        vector<vector<char>> addToScreen(vector<vector<char>> screen){
+            screen.at(position.at(1)).at(position.at(0)) = character;
+            return screen;
+        }
 };
 
 
@@ -94,18 +116,25 @@ int main(){
             key = '0';
         };
 
-        if (key == 27) { // ESC key
-            running = false;
-        }else if(key == 72){
-            printf("Up Arrow pressed.\n");
-        }else if(key == 80){
-            printf("Down Arrow pressed.\n");
-        }else if(key == 75){
-            printf("Left Arrow pressed.\n");
-        }else if(key == 77){
-            printf("Right Arrow pressed.\n");
-        }
+        switch(key){
+            case 27: // ESC key
+                running = false;
+                break;
+            case 72: // up arrow
+                player.move( 0,-1,screen);
+                break;
+            case 80: // down arrow
+                player.move( 0, 1,screen);
+                break;
+            case 75: // left arrow
+                player.move(-1, 0,screen);
+                break;
+            case 77: // right arrow
+                player.move( 1, 0,screen);
+                break;
+        };
 
+        screen = player.addToScreen(screen);
         display(screen);
         Sleep(1);
     };

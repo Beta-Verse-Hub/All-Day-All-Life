@@ -92,94 +92,14 @@ def makeScreen(screen, width, height):
             screen[y].append(" ")
 
 
-class Vertical_Text():
-
-    def __init__(self, width:int):
-        self.length = random.randint(7, 20)
-        self.characters = []
-        for i in range(self.length):
-            self.characters.append(chr(random.randint(32, 126)))
-        self.position = [random.randint(0, width-1), -self.length]
-
-    def move(self, height:int):
-        self.position[1] += 1
-        if self.position[1] > height-1:
-            return True
-        return False
-    
-    def add_to_screen(self, screen:list):
-        for i in range(len(self.characters)):
-            try:
-                if self.position[1]+i >-1:
-                    screen[self.position[1]+i][self.position[0]] = "\033[38;2;0;255;0m" + self.characters[i] + "\033[0m"
-            except IndexError as e:
-                break
-            finally:
-                try:
-                    screen[self.position[1]-1][self.position[0]] = " "
-                except IndexError as e:
-                    break
-
-
 
 def matrix_screen():
-
-    # size = os.get_terminal_size()
-    # width = size.columns
-    # height = size.lines
-
-    # user32 = ctypes.windll.user32
-    # kernel32 = ctypes.windll.kernel32
-
-    # screen = []
-    # running = True
-
-    # texts = []
-    # spawn_a_text = 0
-
-    # while running:
-
-    #     size = os.get_terminal_size()
-    #     width = size.columns
-    #     height = size.lines      
-
-    #     screen = []
-    #     makeScreen(screen, width, height)
-
-    #     active_window = user32.GetForegroundWindow()
-    #     current_window = kernel32.GetConsoleWindow()
-
-    #     spawn_a_text = random.randint(0, 6)
-                
-    #     if spawn_a_text < 1:
-    #         texts.append(Vertical_Text(width))
-            
-    #     at_end = []
-    #     for i in range(len(texts)):
-    #         if texts[i].move(height):
-    #             at_end.append(i)
-    #         texts[i].add_to_screen(screen)
-            
-    #     for i in range(len(at_end)-1, -1, -1):
-    #         texts.pop(i)
-
-    #     if active_window == current_window:
-
-    #         if keyboard.is_pressed("esc"):
-    #             running = False
-
-    #     output(screen)
-    #     time.sleep(0.01)
-
     try:
-        # Call the external C++ program
-        subprocess.run(["./matrix_program.exe"], check=True)
+        subprocess.run(["./matrix_screen.exe"], check=True)
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while running the matrix program: {e}")
     except FileNotFoundError:
         print("The matrix program executable was not found.")
-
-
 
 
 def about_screen():
@@ -424,48 +344,6 @@ def auto_clicker():
         time.sleep(each_delay)
 
 
-def terminal_screen():
-
-    os.system("cls")
-
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
-
-    path = ["C:"]
-    
-    up_key_pressed = False
-    down_key_pressed = False
-    esc_pressed = False
-    right_key_pressed = False
-    left_key_pressed = False
-
-    running = True
-
-    while running:
-
-        size = os.get_terminal_size()
-        width = size.columns
-        height = size.lines
-
-        screen = []
-
-        makeScreen(screen, width, height)
-
-        formatted_path = "\\".join(path)+"\\"
-        command = input("\033[48;2;255;255;0m\033[38;2;0;0;0m" + formatted_path + " \033[0m" + "\033[48;2;255;255;0m\033[38;2;0;0;0m" + "\u25BA" + " \033[0m")
-
-        os.system(command)
-
-        time.sleep(0.001)
-
-        if keyboard.is_pressed("esc") and not esc_pressed:
-            running = False
-
-        elif not keyboard.is_pressed("esc"):
-            esc_pressed = False
-
-
 def file_manager_screen():
     
     size = os.get_terminal_size()
@@ -516,10 +394,16 @@ def file_manager_screen():
             try:
                 if y != 0:
                     for x in range(len(directories[y+select])):
-                        screen[y*2+4][x+3] = directories[y+select][x]
+                        try:
+                            screen[y*2+4][x+3] = directories[y+select][x]
+                        except:
+                            break
                 else:
                     for x in range(len(directories[y+select])):
-                        screen[y*2+4][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + directories[y+select][x] + "\033[0m"
+                        try:
+                            screen[y*2+4][x+2] = "\033[48;2;255;255;255m\033[38;2;0;0;0m" + directories[y+select][x] + "\033[0m"
+                        except:
+                            break
             except:
                 break
 
@@ -630,11 +514,13 @@ def to_do_screen():
                         screen[y*2+2][3] = "X"
 
                     for x in range(len(to_do_data[y+start_element][0])):
-                        if ticked:
-                            screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
-                        else:
-                            screen[y*2+2][x+6] = str(to_do_data[y+start_element][0])[x]
-
+                        try:
+                            if ticked:
+                                screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
+                            else:
+                                screen[y*2+2][x+6] = str(to_do_data[y+start_element][0])[x]
+                        except:
+                            break
                     if y == 0:
                         for x in range(width - 4):
                             screen[y*2+2][x+2] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
@@ -743,12 +629,11 @@ def main_screen():
     height = size.lines
 
     options_and_screens = {"[ ] About" : about_screen,
-                           "[ ] To-do List" : to_do_screen,
-                           "[ ] Terminal" : terminal_screen,
-                           "[ ] File Manager" : file_manager_screen,
                            "[ ] DVD" : dvd_screen,
                            "[ ] Pipes" : pipes_screen,
                            "[ ] Matrix" : matrix_screen,
+                           "[ ] To-do List" : to_do_screen,
+                           "[ ] File Manager" : file_manager_screen,
                            "[ ] Auto Clicker" : auto_clicker}
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
@@ -779,9 +664,11 @@ def main_screen():
         for i in range(len(options)):
 
             for j in range(len(options[i])):
+                try:
+                    screen[i+2][j+2] = f"\033[38;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m" + options[i][j] + "\033[0m"
+                except:
+                    break
 
-                screen[i+2][j+2] = f"\033[38;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m" + options[i][j] + "\033[0m"
-            
             if select == i:
                 screen[i+2][3] = "\267"
 
