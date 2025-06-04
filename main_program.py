@@ -502,31 +502,34 @@ def to_do_screen():
         for y in range((height//2)-1):
 
             try:
-
-                if not(start_element > select):
-
-                    ticked = False
-
-                    if int(to_do_data[y+start_element][1]):
-                        screen[y*2+2][3] = "\u221A"
-                        ticked = True
-                    else:
-                        screen[y*2+2][3] = "X"
-
-                    for x in range(len(to_do_data[y+start_element][0])):
-                        try:
-                            if ticked:
-                                screen[y*2+2][x+6] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
-                            else:
-                                screen[y*2+2][x+6] = str(to_do_data[y+start_element][0])[x]
-                        except:
-                            break
-                    if y == 0:
-                        for x in range(width - 4):
-                            screen[y*2+2][x+2] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+2][x+3] + "\033[0m"
-
+                to_do_data[y+start_element][1]
             except:
-                pass
+                break
+
+            ticked = False
+
+            if int(to_do_data[y+start_element][1]):
+                screen[y*2+1][2] = "\u221A"
+                ticked = True
+            else:
+                screen[y*2+1][2] = "X"
+
+            for x in range(width - 6):
+                if len(str(to_do_data[y+start_element][0]))-2 < x:
+                    break
+
+                if ticked:
+                    screen[y*2+1][x+5] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
+                else:
+                    screen[y*2+1][x+5] = str(to_do_data[y+start_element][0])[x]
+            
+            if y == 0:
+                for x in range(width - 2):
+                    try:
+                        screen[y*2+2][x+3]
+                    except:
+                        break
+                    screen[y*2+1][x+1] = f"\033[48;2;{str(rgb[0])};{str(rgb[1])};{str(rgb[2])}m\033[38;2;0;0;0m" + screen[y*2+2][x+2] + "\033[0m"
 
         rgb[0] += increase_rgb[0]
         if rgb[0] > 255:

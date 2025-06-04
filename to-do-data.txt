@@ -28,7 +28,7 @@ mmmm
 0
 00
 0
-Add a file manager
+kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk
 1
 Add window management
 1
