@@ -20,13 +20,16 @@ class Enemy
             int yDistance = player_position.at(1) - position.at(1);
         }
 
-        Enemy(vector<int> pos){
-            position = pos;
-            character = 'O';
+        Enemy(vector<int> pos):
+            position(pos),
+            character('O')
+        {
+
         }
 
-        vector<vector<char>> addToScreen(){
-            
+        vector<vector<char>> addToScreen(vector<vector<char>> screen){
+            screen.at(position.at(1)).at(position.at(0)) = character;
+            return screen;
         }
 
 };
@@ -37,17 +40,22 @@ class Player
     private:
         vector<int> position;
         int dashDistance;
+        bool dash_toggle;
         vector<int> dashDirection;
         int dashDirectionInt;
         char character;
+
     public:
 
-        Player(vector<int> pos){
-            vector<int> position = pos;
-            int dashDistance = 5;
-            vector<int> dashDirection = {1,0};
-            int dashDirectionInt = 1;
-            char character = '0';
+        Player(vector<int> pos):
+            position(pos),
+            dashDistance(2),
+            dash_toggle(false),
+            dashDirection({1,0}),
+            dashDirectionInt(1),
+            character('0')
+        {
+
         }
 
         //            ( 0,-1)
@@ -77,7 +85,11 @@ class Player
             }
         }
 
-        void dash(vector<vector<char>> screen){
+        int dash(vector<vector<char>> screen){
+            if(!dash_toggle) {
+                return 0;
+            }
+
             position.at(0) += dashDistance*dashDirection.at(0);
             position.at(1) += dashDistance*dashDirection.at(1);
             
@@ -96,6 +108,14 @@ class Player
             screen.at(position.at(1)).at(position.at(0)) = character;
             return screen;
         }
+
+        void toggleDashToggle(){
+            if(dash_toggle){
+                dash_toggle = false;
+            }else{
+                dash_toggle = true;
+            }
+        }
 };
 
 
@@ -112,6 +132,19 @@ vector<vector<char>> makeScreen(int& width, int& height){
     };
 
     return screen;
+}
+
+
+void addAllEnemy(vector<Enemy> Enemies, vector<vector<char>>& screen){
+    for(int i = 0; i < Enemies.size(); i++){
+        screen = Enemies.at(i).addToScreen(screen);
+    };
+}
+
+
+void newEnemy(vector<Enemy>& Enemies, int width, int height){
+    Enemy enemy({rand() % width, rand() % height});
+    Enemies.push_back(enemy);
 }
 
 
@@ -163,6 +196,8 @@ int main(){
     int width, height;
     char key;
     Player player({0,0});
+    vector<Enemy> Enemies = {};
+    int totalEnemies = 0;
 
     while (running)
     {
@@ -180,7 +215,7 @@ int main(){
                 running = false;
                 break;
             case 32: // Space key
-                player.dash(screen);
+                player.toggleDashToggle();
                 break;
             case 72: // up arrow
                 player.move( 0,-1,screen);
@@ -194,9 +229,19 @@ int main(){
             case 77: // right arrow
                 player.move( 1, 0,screen);
                 break;
+            default:
+                player.dash(screen);
+                break;
         };
 
+        if(totalEnemies < 10){
+            newEnemy(Enemies, width, height);
+            totalEnemies++;
+        };
+
+        addAllEnemy(Enemies, screen);
         screen = player.addToScreen(screen);
+
         display(screen);
         Sleep(1);
     };
