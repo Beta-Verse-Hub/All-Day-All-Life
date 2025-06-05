@@ -18,6 +18,18 @@ class Enemy
         void move(vector<int> player_position){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
+            
+            if(xDistance > 0){
+                position.at(0)++;
+            }else if(xDistance < 0){
+                position.at(0)--;
+            };
+
+            if(yDistance > 0){
+                position.at(1)++;
+            }else if(yDistance < 0){
+                position.at(1)--;
+            };
         }
 
         Enemy(vector<int> pos):
@@ -27,9 +39,8 @@ class Enemy
 
         }
 
-        vector<vector<char>> addToScreen(vector<vector<char>> screen){
+        void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
-            return screen;
         }
 
 };
@@ -104,9 +115,8 @@ class Player
             };
         }
 
-        vector<vector<char>> addToScreen(vector<vector<char>> screen){
+        void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
-            return screen;
         }
 
         void toggleDashToggle(){
@@ -115,6 +125,10 @@ class Player
             }else{
                 dash_toggle = true;
             }
+        }
+
+        vector<int> getPosition(){
+            return position;
         }
 };
 
@@ -135,9 +149,10 @@ vector<vector<char>> makeScreen(int& width, int& height){
 }
 
 
-void addAllEnemy(vector<Enemy> Enemies, vector<vector<char>>& screen){
+void addAndMoveAllEnemy(vector<Enemy> Enemies, vector<vector<char>>& screen, Player player){
     for(int i = 0; i < Enemies.size(); i++){
-        screen = Enemies.at(i).addToScreen(screen);
+        Enemies.at(i).move(player.getPosition());
+        Enemies.at(i).addToScreen(screen);
     };
 }
 
@@ -239,8 +254,8 @@ int main(){
             totalEnemies++;
         };
 
-        addAllEnemy(Enemies, screen);
-        screen = player.addToScreen(screen);
+        addAndMoveAllEnemy(Enemies, screen, player);
+        player.addToScreen(screen);
 
         display(screen);
         Sleep(1);
