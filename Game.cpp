@@ -9,28 +9,87 @@
 using namespace std;
 
 
+class Enemy
+{
+    private:
+        vector<int> position;
+        char character;
+    public:
+        void move(vector<int> player_position){
+            int xDistance = player_position.at(0) - position.at(0);
+            int yDistance = player_position.at(1) - position.at(1);
+        }
+
+        Enemy(vector<int> pos){
+            position = pos;
+            character = 'O';
+        }
+
+        vector<vector<char>> addToScreen(){
+            
+        }
+
+};
+
+
 class Player
 {
     private:
-        vector<int> position = {0,0};
-        int dashDistance = 5;
-        char character = '0';
+        vector<int> position;
+        int dashDistance;
+        vector<int> dashDirection;
+        int dashDirectionInt;
+        char character;
     public:
-        void move(int x, int y, vector<vector<char>> screen){
-            if(position.at(0) == 0 and x == -1){
-                return;
-            }else if(position.at(1) == 0 and y == -1){
-                return;
-            }else if(position.at(0) == screen.at(0).size()-1 and x == 1){
-                return;
-            }else if(position.at(1) == screen.size()-1 and y == 1){
-                return;
-            }
-            position = {position.at(0) + x, position.at(1) + y};
+
+        Player(vector<int> pos){
+            vector<int> position = pos;
+            int dashDistance = 5;
+            vector<int> dashDirection = {1,0};
+            int dashDirectionInt = 1;
+            char character = '0';
         }
 
-        void dash(){
+        //            ( 0,-1)
+        //              -1
+        //               |
+        // (-1, 0) -2 ---+--- 2 ( 1, 0)
+        //               |
+        //               1
+        //            ( 0, 1)
 
+        void move(int x, int y, vector<vector<char>> screen){
+            dashDirection = {x,y};
+            dashDirectionInt = (2*x)+y;
+            switch(dashDirectionInt){
+                case -2:
+                    character = '<';
+                    break;
+                case -1:
+                    character = '^';
+                    break;
+                case 2:
+                    character = '>';
+                    break;
+                case 1:
+                    character = 'v';
+                    break;
+            }
+        }
+
+        void dash(vector<vector<char>> screen){
+            position.at(0) += dashDistance*dashDirection.at(0);
+            position.at(1) += dashDistance*dashDirection.at(1);
+            
+            if(position.at(0) < 0){
+                position.at(0) = 0;
+            }else if(position.at(1) < 0){
+                position.at(1) = 0;
+            }else if(position.at(0) > screen.at(0).size()-1){
+                position.at(0) = screen.at(0).size()-1;
+            }else if(position.at(1) > screen.size()-1){
+                position.at(1) = screen.size()-1;
+            };
         }
 
         vector<vector<char>> addToScreen(vector<vector<char>> screen){
@@ -103,7 +162,7 @@ int main(){
     bool running = true;
     int width, height;
     char key;
-    Player player = Player();
+    Player player({0,0});
 
     while (running)
     {
@@ -119,6 +178,9 @@ int main(){
         switch(key){
             case 27: // ESC key
                 running = false;
+                break;
+            case 32: // Space key
+                player.dash(screen);
                 break;
             case 72: // up arrow
                 player.move( 0,-1,screen);
