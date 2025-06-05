@@ -324,8 +324,8 @@ def auto_clicker():
     while not keyboard.is_pressed("enter"):
         input()
         
-    delay = int(input("start autoclicking after how many seconds : "))
-    each_delay = int(input("delay between each click in seconds : "))
+    delay = float(input("start autoclicking after how many seconds : "))
+    each_delay = float(input("delay between each click in seconds : "))
     button = int(input("button to click, 0 for left, 1 for right"))
 
     if button:
