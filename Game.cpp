@@ -9,6 +9,15 @@
 using namespace std;
 
 
+class Bullet
+{
+    private:
+        vector<int> position;
+        char character;
+        int DirectionInt;
+};
+
+
 class Enemy
 {
     private:
@@ -16,22 +25,33 @@ class Enemy
         char character;
         int speed;
     public:
-        void move(vector<int> player_position){
+        void move(vector<int> player_position, const int width, const int height){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
             
             if(xDistance > 0){
                 position.at(0) += speed;
+                if(position.at(0) > width-1){
+                    position.at(0) = width-1;
+                }
             }else if(xDistance < 0){
                 position.at(0) -= speed;
+                if(position.at(0) < 0){
+                    position.at(0) = 0;
+                }
             };
 
             if(yDistance > 0){
                 position.at(1) += speed;
+                if(position.at(1) > height-1){
+                    position.at(1) = height-1;
+                }
             }else if(yDistance < 0){
                 position.at(1) -= speed;
+                if(position.at(1) < 0){
+                    position.at(1) = 0;
+                }
             };
-
 
         }
 
@@ -106,7 +126,7 @@ class Player
 
         int dash(vector<vector<char>> screen){
             if(!dash_toggle) {
-                return 0;
+                return 1;
             }
 
             position.at(0) += dashDistance*dashDirection.at(0);
@@ -121,6 +141,8 @@ class Player
             }else if(position.at(1) > screen.size()-1){
                 position.at(1) = screen.size()-1;
             };
+
+            return 0;
         }
 
         void addToScreen(vector<vector<char>>& screen){
@@ -157,16 +179,16 @@ vector<vector<char>> makeScreen(const int width, const int height){
 }
 
 
-void addAndMoveAllEnemy(vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player){
+void addAndMoveAllEnemy(vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player, const int width, const int height){
     for(int i = 0; i < Enemies.size(); i++){
-        Enemies.at(i).move(player.getPosition());
+        Enemies.at(i).move(player.getPosition(), width, height);
         Enemies.at(i).addToScreen(screen);
     };
 }
 
 
 void newEnemy(vector<Enemy>& Enemies, const int width, const int height){
-    Enemy enemy({rand() % width, rand() % height});
+    Enemy enemy({rand() % width-1, rand() % height-1});
     Enemies.push_back(enemy);
 }
 
@@ -262,7 +284,7 @@ int main(){
             totalEnemies++;
         };
 
-        addAndMoveAllEnemy(Enemies, screen, player);
+        addAndMoveAllEnemy(Enemies, screen, player, width, height);
         player.addToScreen(screen);
 
         display(screen);
