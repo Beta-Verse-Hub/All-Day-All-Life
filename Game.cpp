@@ -14,27 +14,31 @@ class Enemy
     private:
         vector<int> position;
         char character;
+        int speed;
     public:
         void move(vector<int> player_position){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
             
             if(xDistance > 0){
-                position.at(0)++;
+                position.at(0) += speed;
             }else if(xDistance < 0){
-                position.at(0)--;
+                position.at(0) -= speed;
             };
 
             if(yDistance > 0){
-                position.at(1)++;
+                position.at(1) += speed;
             }else if(yDistance < 0){
-                position.at(1)--;
+                position.at(1) -= speed;
             };
+
+
         }
 
         Enemy(vector<int> pos):
             position(pos),
-            character('O')
+            character('O'),
+            speed(rand() % 3 + 1)
         {
 
         }
