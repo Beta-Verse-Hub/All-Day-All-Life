@@ -14,7 +14,36 @@ class Bullet
     private:
         vector<int> position;
         char character;
-        int DirectionInt;
+        int directionInt;
+    public:
+
+        Bullet(vector<int> player_position, int directionInt):
+            position(player_position),
+            directionInt(directionInt),
+            character([directionInt]() {
+                    switch(directionInt){
+                        case  1: return '↓';
+                        case  2: return '→';
+                        case -1: return '↑';
+                        case -2: return '←';
+                    };
+                }())
+        {
+
+        }
+
+        //            ( 0,-1)
+        //              -1
+        //               |
+        // (-1, 0) -2 ---+--- 2 ( 1, 0)
+        //               |
+        //               1
+        //            ( 0, 1)
+
+        void addToScreen(vector<vector<char>>& screen){
+            screen.at(position.at(1)).at(position.at(0)) = character;
+        }
+
 };
 
 
@@ -25,6 +54,15 @@ class Enemy
         char character;
         int speed;
     public:
+
+        Enemy(vector<int> pos):
+            position(pos),
+            character('O'),
+            speed(rand() % 3 + 1)
+        {
+
+        }
+    
         void move(vector<int> player_position, const int width, const int height){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
@@ -55,20 +93,12 @@ class Enemy
 
         }
 
-        Enemy(vector<int> pos):
-            position(pos),
-            character('O'),
-            speed(rand() % 3 + 1)
-        {
-
+        vector<int> getPosition() const{
+            return position;
         }
 
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
-        }
-
-        vector<int> getPosition() const{
-            return position;
         }
 
 };
@@ -92,7 +122,7 @@ class Player
             dash_toggle(false),
             dashDirection({1,0}),
             dashDirectionInt(1),
-            character('0')
+            character('>')
         {
 
         }
