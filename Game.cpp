@@ -12,10 +12,9 @@ using namespace std;
 class Enemy
 {
     private:
-        vector<int> position;
         char character;
     public:
-        void move(vector<int> player_position){
+        void move(vector<int> player_position, vector<int>& position){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
             
@@ -32,14 +31,13 @@ class Enemy
             };
         }
 
-        Enemy(vector<int> pos):
-            position(pos),
+        Enemy():
             character('O')
         {
 
         }
 
-        void addToScreen(vector<vector<char>>& screen){
+        void addToScreen(vector<vector<char>>& screen, vector<int> position){
             screen.at(position.at(1)).at(position.at(0)) = character;
         }
 
@@ -149,17 +147,17 @@ vector<vector<char>> makeScreen(int& width, int& height){
 }
 
 
-void addAndMoveAllEnemy(vector<Enemy> Enemies, vector<vector<char>>& screen, Player player){
+void addAndMoveAllEnemy(vector<vector<Enemy, int>> Enemies, vector<vector<char>>& screen, Player player){
     for(int i = 0; i < Enemies.size(); i++){
-        Enemies.at(i).move(player.getPosition());
-        Enemies.at(i).addToScreen(screen);
+        Enemies.at(i).at(0).move(player.getPosition(), Enemies.at(i).at(1), Enemies.at(i).at(2));
+        Enemies.at(i).at(0).addToScreen(screen, Enemies.at(i).at(1), Enemies.at(i).at(2));
     };
 }
 
 
-void newEnemy(vector<Enemy>& Enemies, int width, int height){
-    Enemy enemy({rand() % width, rand() % height});
-    Enemies.push_back(enemy);
+void newEnemy(vector<vector<Enemy, int>>& Enemies, int width, int height){
+    Enemy enemy();
+    Enemies.push_back({enemy, rand() % width, rand() % height});
 }
 
 
@@ -211,7 +209,7 @@ int main(){
     int width, height;
     char key;
     Player player({0,0});
-    vector<Enemy> Enemies = {};
+    vector<vector<Enemy>> Enemies = {};
     int totalEnemies = 0;
 
     while (running)
