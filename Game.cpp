@@ -14,20 +14,22 @@ class Bullet
     private:
         vector<int> position;
         char character;
+        vector<int> direction;
         int directionInt;
     public:
 
         Bullet(vector<int> player_position, int directionInt):
             position(player_position),
             directionInt(directionInt),
-            character([directionInt]() {
+            direction([directionInt]() -> vector<int> {
                     switch(directionInt){
-                        case  1: return '↓';
-                        case  2: return '→';
-                        case -1: return '↑';
-                        case -2: return '←';
+                        case  1: return { 0, 1};
+                        case  2: return { 1, 0};
+                        case -1: return { 0,-1};
+                        case -2: return {-1, 0};
                     };
-                }())
+                }()),
+            character('+')
         {
 
         }
@@ -39,6 +41,11 @@ class Bullet
         //               |
         //               1
         //            ( 0, 1)
+
+        void move(){
+            position.at(0) += direction.at(0);
+            position.at(1) += direction.at(1);
+        }
 
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
@@ -190,6 +197,11 @@ class Player
         vector<int> getPosition() const{
             return position;
         }
+
+        int getDashDirectionInt() const{
+            return dashDirectionInt;
+        }
+
 };
 
 
@@ -206,6 +218,12 @@ vector<vector<char>> makeScreen(const int width, const int height){
     };
 
     return screen;
+}
+
+
+void shoot(vector<Bullet>& Bullets, Player player, const int width, const int height){
+    Bullet bullet(player.getPosition(), player.getDashDirectionInt());
+    Bullets.push_back(bullet);
 }
 
 
@@ -273,6 +291,7 @@ int main(){
     Player player({0,0});
     vector<Enemy> Enemies = {};
     int totalEnemies = 0;
+    vector<Bullet> Bullets = {};
 
     while (running)
     {
@@ -290,7 +309,7 @@ int main(){
                 running = false;
                 break;
             case 32: // Space key
-                player.toggleDashToggle();
+                shoot(Bullets, player, width, height);
                 break;
             case 72: // up arrow
                 player.move( 0,-1,screen);
@@ -303,6 +322,9 @@ int main(){
                 break;
             case 77: // right arrow
                 player.move( 1, 0,screen);
+                break;
+            case '/': // '/' key
+                player.toggleDashToggle();
                 break;
             default:
                 player.dash(screen);
