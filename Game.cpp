@@ -86,8 +86,8 @@ class Enemy
             
             if(xDistance > 0){
                 position.at(0) += speed;
-                if(position.at(0) > width-1){
-                    position.at(0) = width-1;
+                if(position.at(0) > width-2){
+                    position.at(0) = width-2;
                 }
             }else if(xDistance < 0){
                 position.at(0) -= speed;
@@ -183,8 +183,8 @@ class Player
                 position.at(0) = 0;
             }else if(position.at(1) < 0){
                 position.at(1) = 0;
-            }else if(position.at(0) > screen.at(0).size()-1){
-                position.at(0) = screen.at(0).size()-1;
+            }else if(position.at(0) > screen.at(0).size()-2){
+                position.at(0) = screen.at(0).size()-2;
             }else if(position.at(1) > screen.size()-1){
                 position.at(1) = screen.size()-1;
             };
