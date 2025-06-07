@@ -35,7 +35,7 @@ alt + arrow keys - to change the size of the selected screen according to the sc
 
 ### About
 It is a replica of neofetch but it uses the windows api so it is exclusive for windows.
-You can make a custom logo with this syntax:-
+You can make your own custom logo with this syntax:-
 
 ```-;r;g;b- part of the logo -m- -;r2;g2;b2- other part of the logo -m- ...```
 
@@ -45,7 +45,7 @@ part of the logo => the logo's part in ascii art form
 
 It uses ANSI sequences to display colored text, so using ```-m-``` before each new color and at the end is necessary.
 
-Make the logo in a txt file and save it in the Logos directory.
+Make the logo in a txt file, save it in the Logos directory and add it's correct path to the custom_logo_file_path.txt.
 
 ### To-Do List
 It is a to-do list which stores the data in a txt file in this format:
@@ -57,3 +57,9 @@ It is a to-do list which stores the data in a txt file in this format:
 .
 .
 ```
+
+insert - to add an entry
+delete - to delete an entry
+shift - to edit an entry
+hold ctrl - view the total entry
+enter - to tick or untick the entry
