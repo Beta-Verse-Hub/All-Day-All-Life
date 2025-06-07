@@ -27,6 +27,7 @@ class Bullet
                         case  2: return { 1, 0};
                         case -1: return { 0,-1};
                         case -2: return {-1, 0};
+                        default: return { 0, 0};
                     };
                 }()),
             character('+')
@@ -42,7 +43,7 @@ class Bullet
         //               1
         //            ( 0, 1)
 
-        void move(vector<vector<char>>& screen, const int width, const int height){
+        int move(vector<vector<char>>& screen, const int width, const int height){
             position.at(0) += direction.at(0);
             position.at(1) += direction.at(1);
 
@@ -55,6 +56,16 @@ class Bullet
             }else if(position.at(1) < 0){
                 position.at(1) = 0;
             };
+
+            if(screen.at(position.at(1)).at(position.at(0)) == 'O'){
+                return 1;
+            }
+
+            return 0;
+        }
+
+        vector<int> getPosition() const{
+            return position;
         }
 
         void addToScreen(vector<vector<char>>& screen){
@@ -75,7 +86,7 @@ class Enemy
         Enemy(vector<int> pos):
             position(pos),
             character('O'),
-            speed(rand() % 2 + 1)
+            speed(1)
         {
 
         }
@@ -114,6 +125,10 @@ class Enemy
             return position;
         }
 
+        void setPosition(int x, int y){
+            position = {x, y};
+        }
+
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
         }
@@ -135,7 +150,7 @@ class Player
 
         Player(vector<int> pos):
             position(pos),
-            dashDistance(2),
+            dashDistance(3),
             dash_toggle(false),
             dashDirection({1,0}),
             dashDirectionInt(1),
@@ -167,6 +182,9 @@ class Player
                     break;
                 case 1:
                     character = 'v';
+                    break;
+                default:
+                    character = '~';
                     break;
             }
         }
@@ -215,6 +233,7 @@ class Player
 };
 
 
+
 vector<vector<char>> makeScreen(const int width, const int height){
     vector<vector<char>> screen;
     
@@ -231,12 +250,25 @@ vector<vector<char>> makeScreen(const int width, const int height){
 }
 
 
-
-void addAndMoveAllBullets(vector<Bullet>& Bullets, vector<vector<char>>& screen, const Player player, const int width, const int height){
-    for(int i = 0; i < Bullets.size(); i++){
-        Bullets.at(i).move(screen, width, height);
-        Bullets.at(i).addToScreen(screen);
+int find_shotted_enemy(vector<Enemy>& Enemies, vector<int> bulletPosition){
+    for(int i = 0; i < Enemies.size(); i++){
+        if(bulletPosition == Enemies.at(i).getPosition()){
+            return i;
+        }
     };
+    return -1;
+}
+
+int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player, const int width, const int height){
+    int shotted_enemy = -1;
+    for(int i = 0; i < Bullets.size(); i++){
+        bool hit_enemy = Bullets.at(i).move(screen, width, height);
+        Bullets.at(i).addToScreen(screen);
+        if(hit_enemy){
+            shotted_enemy = find_shotted_enemy(Enemies, Bullets.at(i).getPosition());
+        }
+    };
+    return shotted_enemy;
 }
 
 
@@ -257,6 +289,11 @@ void addAndMoveAllEnemy(vector<Enemy>& Enemies, vector<vector<char>>& screen, co
 void newEnemy(vector<Enemy>& Enemies, const int width, const int height){
     Enemy enemy({rand() % width-1, rand() % height-1});
     Enemies.push_back(enemy);
+}
+
+
+void changeEnemy(vector<Enemy>& Enemies, int const enemyIndex, int const width, int const height){
+    Enemies.at(enemyIndex).setPosition(rand() % width-1, rand() % height-1);
 }
 
 
@@ -356,7 +393,10 @@ int main(){
         };
 
         addAndMoveAllEnemy(Enemies, screen, player, width, height);
-        addAndMoveAllBullets(Bullets, screen, player, width, height);
+        int shotted_enemy = addAndMoveAllBullets(Bullets, Enemies, screen, player, width, height);
+        if(shotted_enemy != -1){
+            changeEnemy(Enemies, shotted_enemy, width, height);
+        };
         player.addToScreen(screen);
 
         display(screen);
