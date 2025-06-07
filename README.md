@@ -1,5 +1,5 @@
 # ALL DAY ALL LIFE
-Ever wanted to run the pipes.sh, cmatrix, etc on your terminal but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc. with a cli-based interface
+Ever wanted to run re is a game in progress to pipes.sh, cmatrix, etc on your terminal but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc. with a cli-based interface
 
 Note: This program is windows-only
 
@@ -47,6 +47,8 @@ It uses ANSI sequences to display colored text, so using ```-m-``` before each n
 
 Make the logo in a txt file, save it in the Logos directory and add it's correct path to the custom_logo_file_path.txt.
 
+esc - to exit
+
 ### To-Do List
 It is a to-do list which stores the data in a txt file in this format:
 
@@ -64,6 +66,7 @@ delete - to delete an entry
 shift - to change an entry
 hold ctrl - view the total entry
 enter - to tick or untick the entry
+esc - to exit
 
 ### File Manager
 It is a file and folder viewer which can be used to not only view files and folders including the hidden ones but also run them.
@@ -71,3 +74,24 @@ It is a file and folder viewer which can be used to not only view files and fold
 up arrow / down arrow - to scroll through the files and folders
 left arrow - go outside a folder or drive
 right arrow - go inside a folder or drive or run a file
+esc - to exit
+
+### DVD
+Remember the animation where a dvd logo bounces around the screen. This program is a replicated version of that animation but it is very responsive to window size changes and it changes color when it hits the border.
+
+esc - to exit
+
+### Pipes
+pipes.sh but windows-only!
+Don't changes the window size after running it (if you want to then exit to the main menu and then change the window size)
+
+esc - to exit
+### Matrix
+cmatrix on window? yes, please.
+
+**It is still in development so don't use it for now**
+
+### Auto Clicker
+**It is still in development so don't use it for now**
+
+Note:- **There is a game in progress too.**
