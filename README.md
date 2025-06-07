@@ -58,8 +58,16 @@ It is a to-do list which stores the data in a txt file in this format:
 .
 ```
 
+up arrow / down arrow - to scroll through the entries
 insert - to add an entry
 delete - to delete an entry
-shift - to edit an entry
+shift - to change an entry
 hold ctrl - view the total entry
 enter - to tick or untick the entry
+
+### File Manager
+It is a file and folder viewer which can be used to not only view files and folders including the hidden ones but also run them.
+
+up arrow / down arrow - to scroll through the files and folders
+left arrow - go outside a folder or drive
+right arrow - go inside a folder or drive or run a file
