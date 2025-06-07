@@ -1,6 +1,8 @@
 # ALL DAY ALL LIFE
 Ever wanted to run the pipes.sh, cmatrix, etc on your terminal but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc. with a cli-based interface
 
+Note: This program is windows-only
+
 ## Installation
 To use this program, you will need to have the following dependencies installed:
 
@@ -15,11 +17,21 @@ To use this program, you will need to have the following dependencies installed:
 - pynput      => ```pip install pynput```
 
 ## Running it
-To run the program, simply execute the main_program.py file:
+To run the program, simply execute the main.py file on the standard cmd:
 
-```python main_program.py```
+```python main.py```
 
-This will launch the main menu, where you can select from various options such as "About", "To-do List",  "File Manager", "DVD", "Pipes", "Matrix", and "Auto Clicker".
+This will launch a window manager program which uses windows' title for management.
+It will show a list containing the windows' title and it position according to the grid (default grid size is (4,4)).
+
+esc - stop the program.
+shift - to add a screen according to it's title
+- if it exists - it will add the title to list an then you can manupulate it's place.
+- if it doesn't exists - it will make a new window will run the main_program.py and maximize it.
+Main_program.py will launch the main menu, where you can select from various options such as "About", "To-do List",  "File Manager", "DVD", "Pipes", "Matrix", and "Auto Clicker".
+ctrl - change the grid size
+tab + arrow keys - to change the place of the selected screen according to the screen
+alt + arrow keys - to change the size of the selected screen according to the screen
 
 ### About
 It is a replica of neofetch but it uses the windows api so it is exclusive for windows.
