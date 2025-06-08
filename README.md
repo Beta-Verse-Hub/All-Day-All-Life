@@ -6,15 +6,29 @@ Note: This program is windows-only
 ## Installation
 To use this program, you will need to have the following dependencies installed:
 
+python :-
+
+- datetime
 - os
-- keyboard    => ```pip install keyboard```
 - time
 - random
 - ctypes
 - sys
 - platform
 - subprocess
+- keyboard    => ```pip install keyboard```
 - pynput      => ```pip install pynput```
+- psutil      => ```pip install psutil```
+
+c++ :-
+
+- iostream
+- vector
+- cstdlib
+- ctime
+- string
+- conio.h
+- windows.h
 
 ## Running it
 To run the program, simply execute the main.py file on the standard cmd:

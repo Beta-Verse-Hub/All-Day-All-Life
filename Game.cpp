@@ -18,10 +18,11 @@ class Bullet
         int directionInt;
     public:
 
+        // Constructor
         Bullet(vector<int> player_position, int directionInt):
-            position(player_position),
-            directionInt(directionInt),
-            direction([directionInt]() -> vector<int> {
+            position(player_position), // The position of the bullet is set to the position of the player.
+            directionInt(directionInt), // The direction of the bullet as an int.
+            direction([directionInt]() -> vector<int> { // The direction of the bullet as an vector.
                     switch(directionInt){
                         case  1: return { 0, 1};
                         case  2: return { 1, 0};
@@ -30,7 +31,7 @@ class Bullet
                         default: return { 0, 0};
                     };
                 }()),
-            character('+')
+            character('+') // The character representing the bullet.
         {
 
         }
@@ -43,31 +44,28 @@ class Bullet
         //               1
         //            ( 0, 1)
 
+        // Moves the bullet in the current direction by updating its position.
         int move(vector<vector<char>>& screen, const int width, const int height){
+            // Moves the bullet according to its direction.
             position.at(0) += direction.at(0);
             position.at(1) += direction.at(1);
 
-            if(position.at(0) > width-2){
-                position.at(0) = width-2;
-            }else if(position.at(0) < 0){
-                position.at(0) = 0;
-            }else if(position.at(1) > height-1){
-                position.at(1) = height-1;
-            }else if(position.at(1) < 0){
-                position.at(1) = 0;
+            if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
+                return 2; // if the bullet has moved out of screen bounds.
             };
-
             if(screen.at(position.at(1)).at(position.at(0)) == 'O'){
-                return 1;
+                return 1; // if the bullet hits an enemy.
             }
 
-            return 0;
+            return 0; // if the bullet moves successfully without hitting anything.
         }
 
+        // Returns the current position of the bullet.
         vector<int> getPosition() const{
             return position;
         }
 
+        // Adds the character of the bullet to the screen at its current position.
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
         }
@@ -83,37 +81,40 @@ class Enemy
         int speed;
     public:
 
+        // Constructor
         Enemy(vector<int> pos):
-            position(pos),
-            character('O'),
-            speed(1)
+            position(pos), // The position of the enemy.
+            character('O'), // The character representing the enemy.
+            speed(1) // The speed of the enemy.
         {
 
         }
-    
+
+        // Moves the enemy closer to the player's position according to the speed.
         void move(vector<int> player_position, const int width, const int height){
             int xDistance = player_position.at(0) - position.at(0);
             int yDistance = player_position.at(1) - position.at(1);
             
+            // Does not move the enemy if it is already at the edge of the screen.
             if(xDistance > 0){
-                position.at(0) += speed;
+                position.at(0) += speed; // Moves the enemy to the right.
                 if(position.at(0) > width-2){
-                    position.at(0) = width-2;
+                    position.at(0) = width-2; 
                 }
             }else if(xDistance < 0){
-                position.at(0) -= speed;
+                position.at(0) -= speed; // Moves the enemy to the left.
                 if(position.at(0) < 0){
                     position.at(0) = 0;
                 }
             };
 
             if(yDistance > 0){
-                position.at(1) += speed;
+                position.at(1) += speed; // Moves the enemy down.
                 if(position.at(1) > height-1){
                     position.at(1) = height-1;
                 }
             }else if(yDistance < 0){
-                position.at(1) -= speed;
+                position.at(1) -= speed; // Moves the enemy up.
                 if(position.at(1) < 0){
                     position.at(1) = 0;
                 }
@@ -121,14 +122,17 @@ class Enemy
 
         }
 
+        // Returns the current position of the bullet.
         vector<int> getPosition() const{
             return position;
         }
 
+        // Sets the position of the enemy to the given coordinates (x, y).
         void setPosition(int x, int y){
             position = {x, y};
         }
 
+        // Adds the character of the enemy to the screen at its current position.
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
         }
@@ -149,12 +153,12 @@ class Player
     public:
 
         Player(vector<int> pos):
-            position(pos),
-            dashDistance(3),
-            dash_toggle(false),
-            dashDirection({1,0}),
-            dashDirectionInt(1),
-            character('>')
+            position(pos), // The position of the player.
+            dashDistance(3), // The distance the player dashes.
+            dash_toggle(false), // The state of the dash.
+            dashDirection({1,0}), // The direction of the dash.
+            dashDirectionInt(1), // The direction of the dash as an integer.
+            character('>') // The character representing the player.
         {
 
         }
@@ -167,53 +171,66 @@ class Player
         //               1
         //            ( 0, 1)
 
+        // Moves the player in the specified direction (x,y) and sets the player's character accordingly.
         void move(int x, int y, vector<vector<char>> screen){
+            // Sets the direction of the dash.
             dashDirection = {x,y};
             dashDirectionInt = (2*x)+y;
+            
+            // Sets the character of the player.
             switch(dashDirectionInt){
                 case -2:
-                    character = '<';
+                    character = '<'; // Left
                     break;
                 case -1:
-                    character = '^';
+                    character = '^'; // Up
                     break;
                 case 2:
-                    character = '>';
+                    character = '>'; // Right
                     break;
                 case 1:
-                    character = 'v';
+                    character = 'v'; // Down
                     break;
                 default:
-                    character = '~';
+                    character = '~'; // Idle
                     break;
             }
         }
 
+        // Dashes the player in the direction set by the dashDirection variable
         int dash(vector<vector<char>> screen){
+            // Returns 1 if the player is not dashing.
             if(!dash_toggle) {
                 return 1;
             }
 
+            // Moves the player in the direction of the dash.
             position.at(0) += dashDistance*dashDirection.at(0);
             position.at(1) += dashDistance*dashDirection.at(1);
             
-            if(position.at(0) < 0){
-                position.at(0) = 0;
-            }else if(position.at(1) < 0){
-                position.at(1) = 0;
-            }else if(position.at(0) > screen.at(0).size()-2){
+            if(position.at(0) < 0){ // If the player's x is less than screen width
+                // Player's x will be set to screen width - 2
                 position.at(0) = screen.at(0).size()-2;
-            }else if(position.at(1) > screen.size()-1){
+            }else if(position.at(1) < 0){ // If the player's y is less than screen height
+                // Player's y will be set to screen height - 1
                 position.at(1) = screen.size()-1;
+            }else if(position.at(0) > screen.at(0).size()-2){ // If the player's x is greater than screen width
+                // Player's x will be set to 0
+                position.at(0) = 0;
+            }else if(position.at(1) > screen.size()-1){ // If the player's y is greater than screen height
+                // Player's y will be set to 0
+                position.at(1) = 0;
             };
 
             return 0;
         }
 
+        // Adds the character of the player to the screen at its current position.
         void addToScreen(vector<vector<char>>& screen){
             screen.at(position.at(1)).at(position.at(0)) = character;
         }
 
+        // Toggles the state of the dash.
         void toggleDashToggle(){
             if(dash_toggle){
                 dash_toggle = false;
@@ -222,10 +239,12 @@ class Player
             }
         }
 
+        // Returns the current position of the player.
         vector<int> getPosition() const{
             return position;
         }
 
+        // Returns the direction of the dash as an integer.
         int getDashDirectionInt() const{
             return dashDirectionInt;
         }
@@ -261,13 +280,20 @@ int find_shotted_enemy(vector<Enemy>& Enemies, vector<int> bulletPosition){
 
 int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player, const int width, const int height){
     int shotted_enemy = -1;
-    for(int i = 0; i < Bullets.size(); i++){
-        bool hit_enemy = Bullets.at(i).move(screen, width, height);
-        Bullets.at(i).addToScreen(screen);
-        if(hit_enemy){
-            shotted_enemy = find_shotted_enemy(Enemies, Bullets.at(i).getPosition());
+    auto it = remove_if(Bullets.begin(), Bullets.end(), [&](Bullet& bullet){
+        int hit_enemy = bullet.move(screen, width, height);
+        if (hit_enemy == 1) {
+            shotted_enemy = find_shotted_enemy(Enemies, bullet.getPosition());
+            return true;
+        } else if (hit_enemy == 2) {
+            return true;
         }
-    };
+        bullet.addToScreen(screen);
+        return false;
+    });
+    
+    // erase bullets
+    Bullets.erase(it, Bullets.end());
     return shotted_enemy;
 }
 
@@ -400,7 +426,7 @@ int main(){
         player.addToScreen(screen);
 
         display(screen);
-        Sleep(10);
+        Sleep(20);
     };
     
 
