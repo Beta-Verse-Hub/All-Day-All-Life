@@ -343,44 +343,54 @@ void newEnemy(vector<Enemy>& Enemies, const int width, const int height){
 }
 
 
+// Changes the position of the enemy
 void changeEnemy(vector<Enemy>& Enemies, int const enemyIndex, int const width, int const height){
     Enemies.at(enemyIndex).setPosition(rand() % width-1, rand() % height-1);
 }
 
 
+// Displays the screen
 int display(vector<vector<char>>& screen){
 
+    // A bunch of \n for a gap between two frames
     string screenString = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
    
+    // Displays each row
     for(int y = 0; y < screen.size(); y++){
 
+        // Displays each character
         for(int x = 0; x < screen.at(y).size(); x++){
             screenString += screen.at(y).at(x);
         };
 
+        // Adds a \n if it is the last row
         if(y < screen.size()-1){
             screenString += "\n";
-        }else{
-            screenString.pop_back();
         };
 
     };
 
+    // Displays the screen
     cout << screenString;
 
     return 0;
 }
 
 
+// Finds the size of the terminal
 bool getTerminalSizeWindows(int& width, int& height) {
+
+    // Define csbi and console handle
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
+    // Check if the handle is valid
     if (hConsole == INVALID_HANDLE_VALUE) {
         return false;
     }
 
     if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+        // Calculate the width and height
         width = csbi.srWindow.Right - csbi.srWindow.Left + 1;
         height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
         return true;
@@ -392,7 +402,6 @@ bool getTerminalSizeWindows(int& width, int& height) {
 
 
 // Main update loop
-
 int main(){
     vector<vector<char>> screen;
     bool running = true;
