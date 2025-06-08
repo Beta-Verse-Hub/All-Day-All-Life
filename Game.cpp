@@ -1,3 +1,5 @@
+// Includes
+
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -9,6 +11,9 @@
 using namespace std;
 
 
+// Classes
+
+// Bullet class
 class Bullet
 {
     private:
@@ -73,6 +78,7 @@ class Bullet
 };
 
 
+// Enemy class
 class Enemy
 {
     private:
@@ -140,6 +146,7 @@ class Enemy
 };
 
 
+// Player class
 class Player
 {
     private:
@@ -253,13 +260,18 @@ class Player
 
 
 
+// Methods
+
+// Creates a 2D screen of size width by height.
 vector<vector<char>> makeScreen(const int width, const int height){
     vector<vector<char>> screen;
     
     for(int y = 0; y < height; y++){
+        // Making rows
         screen.push_back(vector<char>());
 
         for(int x = 0; x < width-1; x++){
+            // Making columns
             screen.at(y).push_back(' ');
         };
 
@@ -269,25 +281,34 @@ vector<vector<char>> makeScreen(const int width, const int height){
 }
 
 
+// Finds the index of the enemy which has been shot by the given bullet.
 int find_shotted_enemy(vector<Enemy>& Enemies, vector<int> bulletPosition){
     for(int i = 0; i < Enemies.size(); i++){
+        // If the position of the bullet is the same as the position of the enemy
         if(bulletPosition == Enemies.at(i).getPosition()){
+            // Return the index of the enemy
             return i;
         }
     };
+    // Else return -1
     return -1;
 }
 
+
+// Moves all bullets, adds the characters of the bullets to the screen, returns the index of the shotted enemy and removes the bullets that have been shot.
 int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player, const int width, const int height){
+
     int shotted_enemy = -1;
     auto it = remove_if(Bullets.begin(), Bullets.end(), [&](Bullet& bullet){
+        // Move the bullet
         int hit_enemy = bullet.move(screen, width, height);
-        if (hit_enemy == 1) {
+    
+        if (hit_enemy == 1) { // Check if the bullet has hit an enemy
             shotted_enemy = find_shotted_enemy(Enemies, bullet.getPosition());
             return true;
-        } else if (hit_enemy == 2) {
+        }else if (hit_enemy == 2) { // Check if the bullet has hit the boundary
             return true;
-        }
+        };
         bullet.addToScreen(screen);
         return false;
     });
@@ -298,13 +319,16 @@ int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector
 }
 
 
+// Shoots bullets
 void shoot(vector<Bullet>& Bullets, Player player, const int width, const int height){
-    Bullet bullet(player.getPosition(), player.getDashDirectionInt());
-    Bullets.push_back(bullet);
+    Bullet bullet(player.getPosition(), player.getDashDirectionInt()); // Creates a bullet
+    Bullets.push_back(bullet); // Adds the bullet to the vector
 }
 
 
+// Moves all enemies and adds the characters of the enemies to the screen
 void addAndMoveAllEnemy(vector<Enemy>& Enemies, vector<vector<char>>& screen, const Player player, const int width, const int height){
+    // Moves all enemies
     for(int i = 0; i < Enemies.size(); i++){
         Enemies.at(i).move(player.getPosition(), width, height);
         Enemies.at(i).addToScreen(screen);
@@ -312,9 +336,10 @@ void addAndMoveAllEnemy(vector<Enemy>& Enemies, vector<vector<char>>& screen, co
 }
 
 
+// Creates an enemy
 void newEnemy(vector<Enemy>& Enemies, const int width, const int height){
-    Enemy enemy({rand() % width-1, rand() % height-1});
-    Enemies.push_back(enemy);
+    Enemy enemy({rand() % width-1, rand() % height-1}); // Creates an enemy
+    Enemies.push_back(enemy); // Adds the enemy to the vector
 }
 
 
@@ -364,6 +389,9 @@ bool getTerminalSizeWindows(int& width, int& height) {
     return false;
 }
 
+
+
+// Main update loop
 
 int main(){
     vector<vector<char>> screen;
