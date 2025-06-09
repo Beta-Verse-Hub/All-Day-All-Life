@@ -4,7 +4,7 @@ import time
 import random
 import ctypes
 import sys
-import config
+from config import config
 import platform
 import subprocess
 import psutil
@@ -12,72 +12,123 @@ import datetime
 from pynput.mouse import Controller, Button
 
 
-def list_drives():
+
+# Updates the 'config.txt' file with the current configuration.
+def updateConfig():
+
+    configuration = config
+
+    with open("config.txt", "w") as config:
+        # Clears the file
+        config.truncate()
     
+        # Writes the configuration
+        config.write("config = {\n")
+        for i in configuration:
+            config.write(f"\t'{i}' : {configuration[i]}\n")
+        config.write("}\n")
+    
+    # Reloads the configuration
+    from config import config
+
+
+# List all available drives on the system.
+def list_drives():
+
     drives = []
     for letter in range(ord('A'), ord('Z') + 1):
         drive = f"{chr(letter)}:\\"
+
+        # Check if the drive exists
         if os.path.exists(drive):
-            drives.append(drive)
+            drives.append(drive) # Add the drive to the list if it exists
+    
     return drives
 
 
-def get_config():
-    with open("config.txt", "r") as config:
-        config = config.readlines()
-
-    return config
-
-
+# Reads and returns the to-do list's data from the 'to-do-data.txt' file as a list of lists.
 def get_to_do_data():
-    """Get the data for the todo list from the txt file"""
 
     with open("to-do-data.txt","r+") as data:
         data = data.readlines()
+    
     modified_data = []
     
     for i in range(len(data)//2):
-        if data[i*2][-1] =="\n": a = data[i*2][0:-1]
-        else: a = data[i*2]
-        if data[(i*2)+1][-1] =="\n": b = data[(i*2)+1][0:-1]
-        else: b = data[(i*2)+1]
+        
+        # Fetches the text
+        if data[i*2][-1] =="\n":
+            a = data[i*2][0:-1]
+        else:
+            a = data[i*2]
+
+        # Fetches the tick
+        if data[(i*2)+1][-1] =="\n":
+            b = data[(i*2)+1][0:-1]
+        else:
+            b = data[(i*2)+1]
+
+        # Appends the data
         modified_data.append([a, b])
 
     return modified_data
 
 
+# Writes the to-do list's data to the 'to-do-data.txt' file
 def set_to_do_data(to_do_data):
-    """Get the data for the todo list from the txt file"""
 
     modified_data = []
     for i in to_do_data:
+        # Appends the text
         modified_data.append(i[0])
+
+        # Appends the tick
         modified_data.append(i[1])
 
+    # Clears and then writes the data
     with open("to-do-data.txt","r+") as data:
         data.truncate()
         data.write("\n".join(modified_data))
     
 
+# Converts a logo string from a special syntax to an ansi coloured string
 def colorise_logo(logo):
+    
+    """
+    The syntax is as follows:
+
+    -;r;g;b- part of the logo -m- -;r2;g2;b2- other part of the logo -m- ...
+    
+    -;r;g;b- => set the rgb value in decimals integer.
+    part of the logo => the logo's part in ascii art form
+    -m- => to stop using the previous color
+    """
     
     logo = str(logo)
     logo = list(logo.split("-"))
     new_logo = ""
 
     for i in logo:
+        # Skips empty lines
         if i == "":
             continue
+
+        # Adds the text
         if not (i[0] in ["m",";"]):
             new_logo += i
+
+        # Changes the color
         elif not (i[0] in ["m"]):
             j = list(i.split(";"))
             new_logo += f"\033[38;2;{ j[1] };{ j[2] };{ j[3] }m"
+        
+        # Resets the color
         else:
             new_logo += f"\033[0m"
 
 
     return new_logo
+
 
 
 def output(screen):
@@ -88,7 +139,7 @@ def output(screen):
         for char in range(len(screen[line])):
             a += screen[line][char]
         formatted_screen.append(a)
-    print("\n"*50+"".join(formatted_screen)[0:-1], end="")
+    print("\n"*50 + "".join(formatted_screen)[0:-1], end="")
 
 
 def makeScreen(screen, width, height):
@@ -108,6 +159,35 @@ def matrix_screen():
         print(f"An error occurred while running the matrix program: {e}")
     except FileNotFoundError:
         print("The matrix program executable was not found.")
+
+
+
+# Screens
+
+
+def game_of_life_screen():
+
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    screen = []
+    makeScreen(screen, width, height)
+
+    running = True
+    while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+        
+        if active_window == current_window:
+
+            if keyboard.is_pressed("esc"):
+                running = False
+
 
 
 def about_screen():
@@ -362,7 +442,7 @@ def file_manager_screen():
     kernel32 = ctypes.windll.kernel32
 
     select = 0
-    path = ["C:"]
+    path = config["Main Path"]
     available_drives = list_drives()
 
     up_key_pressed = False
@@ -644,13 +724,13 @@ def main_screen():
     width = size.columns
     height = size.lines
 
-    options_and_screens = {"[ ] About" : about_screen,
-                           "[ ] DVD" : dvd_screen,
-                           "[ ] Pipes" : pipes_screen,
-                           "[ ] Matrix" : matrix_screen,
-                           "[ ] To-do List" : to_do_screen,
-                           "[ ] File Manager" : file_manager_screen,
-                           "[ ] Auto Clicker" : auto_clicker}
+    options_and_screens = {"[ ] About"        : about_screen        ,
+                           "[ ] DVD"          : dvd_screen          ,
+                           "[ ] Pipes"        : pipes_screen        ,
+                           "[ ] Matrix"       : matrix_screen       ,
+                           "[ ] To-do List"   : to_do_screen        ,
+                           "[ ] File Manager" : file_manager_screen ,
+                           "[ ] Auto Clicker" : auto_clicker        }
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
