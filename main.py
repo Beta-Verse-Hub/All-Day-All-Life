@@ -2,22 +2,45 @@
 import os
 import time
 import keyboard
+import datetime
 import ctypes
 from ctypes import wintypes
 
 
+# This function takes a window, a main grid, a new grid, the width of the screen and the height of the screen, and moves the window to the new grid position on the screen.
 def position_window(window, main_grid, new_grid, screen_width, screen_height):
-    user32.MoveWindow(window, (new_grid[0][0]*(screen_width//main_grid[0]))-5, (new_grid[0][1]*(screen_height//main_grid[1]))-1, (new_grid[1][0]*(screen_width+14)//main_grid[0])+10, (new_grid[1][1]*(screen_height+14)//main_grid[1])+2, True)
+    
+    x = (new_grid[0][0]*(screen_width//main_grid[0]))-5
+    y = (new_grid[0][1]*(screen_height//main_grid[1]))-1
+    width = (new_grid[1][0]*(screen_width+14)//main_grid[0])+10
+    height = (new_grid[1][1]*(screen_height+14)//main_grid[1])+2
+
+    user32.MoveWindow(window, x, y, width, height, True)
 
 
+# Prints out the details of the windows and the active window at the current time
 def print_out_details(windows, active_window):
+
     size = os.get_terminal_size()
     details = "\n"*50
+
+    # Adding the top border
     details += "-"*size.columns
+    
+    # Time
+    details += f" ⏰ Time : {datetime.datetime.now().strftime('%H:%M:%S')}\n"
+    
+    # The active window
     details += f"Active Window ID : {active_window}\n"
+    
+    # All the windows
     for i in range(len(windows)):
         details +=  f" {list(windows.keys())[i]} : {list(windows.values())[i][0]} : {list(windows.values())[i][1]}\n"
+    
+    # Adding the bottom border
     details += "-"*size.columns
+    
+    # Print out the details
     print(details, end="")
 
 

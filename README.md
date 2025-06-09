@@ -34,6 +34,9 @@ To download the non-preinstalled ones type the following command:
 
 ```pip install -r requirements.txt```
 
+
+Then, download the source code from this github repository and place it in the same directory as the main.py file.
+
 ## Running it
 To run the program, simply execute the main.py file on the standard cmd:
 

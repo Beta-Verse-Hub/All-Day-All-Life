@@ -4,6 +4,7 @@ import time
 import random
 import ctypes
 import sys
+import config
 import platform
 import subprocess
 import psutil
@@ -19,6 +20,13 @@ def list_drives():
         if os.path.exists(drive):
             drives.append(drive)
     return drives
+
+
+def get_config():
+    with open("config.txt", "r") as config:
+        config = config.readlines()
+
+    return config
 
 
 def get_to_do_data():
@@ -428,6 +436,11 @@ def file_manager_screen():
                 path.append(directories[select])
                 try:
                     os.listdir("/".join(path)+"/")
+                except PermissionError as e:
+                    os.system("cls")
+                    print("permission denied")
+                    time.sleep(0.5)
+                    path.pop()
                 except NotADirectoryError as e:
                     os.startfile("/".join(path))
                     path.pop()
@@ -509,10 +522,10 @@ def to_do_screen():
             ticked = False
 
             if int(to_do_data[y+start_element][1]):
-                screen[y*2+1][2] = "\u221A"
+                screen[y*2+1][2] = "\033[38;2;0;255;0m\u221A\033[0m"
                 ticked = True
             else:
-                screen[y*2+1][2] = "X"
+                screen[y*2+1][2] = "\033[38;2;255;0;0mX\033[0m"
 
             for x in range(width - 6):
                 if len(str(to_do_data[y+start_element][0]))-2 < x:
