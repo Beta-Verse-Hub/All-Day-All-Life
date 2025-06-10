@@ -160,8 +160,15 @@ def screenChangeMode(screen):
     width = size.columns
     height = size.lines
 
+    up_pressed = True
+    down_pressed = True
+    left_pressed = True
+    right_pressed = True
+    shift_pressed = True
+    space_pressed = True
+
     running = True
-    select = [0,0]
+    select = [2,2]
     while running:
 
         active_window = user32.GetForegroundWindow()
@@ -169,25 +176,51 @@ def screenChangeMode(screen):
 
         if active_window == current_window:
 
-            if keyboard.is_pressed("up"):
-                select += [-1,0]
-            if keyboard.is_pressed("down"):
-                select += [1,0]
-            if keyboard.is_pressed("left"):
-                select += [0,-1]
-            if keyboard.is_pressed("right"):
-                select += [0,1]
-            if keyboard.is_pressed("space"):
-                if screen[select[0]][select[1]] == "#":
-                    screen[select[0]][select[1]] = " "
-                else:
-                    screen[select[0]][select[1]] = "#"
+            if keyboard.is_pressed("up") and not up_pressed:
+                select[1] -= 1
+                up_pressed = True
+            elif not keyboard.is_pressed("up"):
+                up_pressed = False
+            
+            if keyboard.is_pressed("down") and not down_pressed:
+                select[1] += 1
+                down_pressed = True
+            elif not keyboard.is_pressed("down"):
+                down_pressed = False
+            
+            if keyboard.is_pressed("left") and not left_pressed:
+                select[0] -= 1
+                left_pressed = True
+            elif not keyboard.is_pressed("left"):
+                left_pressed = False
+            
+            if keyboard.is_pressed("right") and not right_pressed:
+                select[0] += 1
+                right_pressed = True
+            elif not keyboard.is_pressed("right"):
+                right_pressed = False
 
-            if keyboard.is_pressed("esc"):
+            if keyboard.is_pressed("space") and not space_pressed:
+                if screen[select[1]][select[0]] == "#":
+                    screen[select[1]][select[0]] = " "
+                else:
+                    screen[select[1]][select[0]] = "#"
+                space_pressed = True
+            elif not keyboard.is_pressed("space"):
+                space_pressed = False
+
+            if keyboard.is_pressed("shift") and not shift_pressed:
                 running = False
+                shift_pressed = True
+            elif not keyboard.is_pressed("shift"):
+                shift_pressed = False
+                    
+        screen[select[1]][select[0]] = f"\033[48;2;255;255;255m{screen[select[1]][select[0]]}\033[0m"
         
         output(screen)
         time.sleep(0.01)
+    
+    return screen
 
 
 def next_generation(screen, new_screen):
@@ -207,12 +240,16 @@ def next_generation(screen, new_screen):
                     if screen[y+i][x+j] == "#": # Check if the neighbour is alive
                         alive_neighbours += 1
 
+
+
             if screen[y][x] == "#" and alive_neighbours < 2 or alive_neighbours > 3: # underpopulation and overpopulation
                 new_screen[y].append(" ")
             elif screen[y][x] == " " and alive_neighbours == 3: # survival
                 new_screen[y].append("#")
             elif alive_neighbours in [2,3]: # reproduction
-                new_screen[y].append(screen[y][x])
+                new_screen[y].append("#")
+            else:
+                new_screen[y].append(" ")
 
 
 # Screen
@@ -251,15 +288,14 @@ def game_of_life_screen():
         active_window = user32.GetForegroundWindow()
         current_window = kernel32.GetConsoleWindow()
         
-        next_generation(screen, new_screen)
-        screen = new_screen
         new_screen = []
-        makeScreen(new_screen, width, height)
+        next_generation(screen, new_screen)
+        screen = new_screen.copy()
 
         if active_window == current_window:
 
             if keyboard.is_pressed("shift") and not shift_pressed:
-                screenChangeMode(screen)
+                screen = screenChangeMode(screen)
                 shift_pressed = True
             elif not keyboard.is_pressed("shift"):
                 shift_pressed = False
@@ -268,7 +304,7 @@ def game_of_life_screen():
                 running = False
         
         output(screen)
-        time.sleep(0.05)
+        time.sleep(1)
 
 
 
