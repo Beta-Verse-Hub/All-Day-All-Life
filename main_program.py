@@ -151,6 +151,75 @@ def makeScreen(screen, width, height):
             screen[y].append(" ")
 
 
+def screenChangeMode(screen):
+    
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    running = True
+    select = [0,0]
+    while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+
+        if active_window == current_window:
+
+            if keyboard.is_pressed("up"):
+                select += [-1,0]
+            if keyboard.is_pressed("down"):
+                select += [1,0]
+            if keyboard.is_pressed("left"):
+                select += [0,-1]
+            if keyboard.is_pressed("right"):
+                select += [0,1]
+            if keyboard.is_pressed("space"):
+                if screen[select[0]][select[1]] == "#":
+                    screen[select[0]][select[1]] = " "
+                else:
+                    screen[select[0]][select[1]] = "#"
+
+            if keyboard.is_pressed("esc"):
+                running = False
+        
+        output(screen)
+        time.sleep(0.01)
+
+
+def next_generation(screen, new_screen):
+    for y in range(len(screen)):
+        new_screen.append([])
+        for x in range(len(screen[y])):
+            alive_neighbours = 0
+
+            for i in range(-1,2):
+                for j in range(-1,2):
+                    if i == 0 and j == 0: # Skip the current cell
+                        continue
+                    if y+i < 0 or y+i >= len(screen): # Skip the row which is out of bounds
+                        continue
+                    if x+j < 0 or x+j >= len(screen[y+i]): # Skip the column which is out of bounds
+                        continue
+                    if screen[y+i][x+j] == "#": # Check if the neighbour is alive
+                        alive_neighbours += 1
+
+            if screen[y][x] == "#" and alive_neighbours < 2 or alive_neighbours > 3: # underpopulation and overpopulation
+                new_screen[y].append(" ")
+            elif screen[y][x] == " " and alive_neighbours == 3: # survival
+                new_screen[y].append("#")
+            elif alive_neighbours in [2,3]: # reproduction
+                new_screen[y].append(screen[y][x])
+
+
+# Screen
+
+def calculator_screen():
+    pass
+
 
 def matrix_screen():
     try:
@@ -159,10 +228,6 @@ def matrix_screen():
         print(f"An error occurred while running the matrix program: {e}")
     except FileNotFoundError:
         print("The matrix program executable was not found.")
-
-
-
-# Screens
 
 
 def game_of_life_screen():
@@ -175,7 +240,10 @@ def game_of_life_screen():
     height = size.lines
 
     screen = []
+    new_screen = []
     makeScreen(screen, width, height)
+
+    shift_pressed = True
 
     running = True
     while running:
@@ -183,10 +251,24 @@ def game_of_life_screen():
         active_window = user32.GetForegroundWindow()
         current_window = kernel32.GetConsoleWindow()
         
+        next_generation(screen, new_screen)
+        screen = new_screen
+        new_screen = []
+        makeScreen(new_screen, width, height)
+
         if active_window == current_window:
 
+            if keyboard.is_pressed("shift") and not shift_pressed:
+                screenChangeMode(screen)
+                shift_pressed = True
+            elif not keyboard.is_pressed("shift"):
+                shift_pressed = False
+            
             if keyboard.is_pressed("esc"):
                 running = False
+        
+        output(screen)
+        time.sleep(0.05)
 
 
 
@@ -728,6 +810,8 @@ def main_screen():
                            "[ ] DVD"          : dvd_screen          ,
                            "[ ] Pipes"        : pipes_screen        ,
                            "[ ] Matrix"       : matrix_screen       ,
+                           "[ ] Calculator"   : calculator_screen   ,
+                           "[ ] Game of Life" : game_of_life_screen ,
                            "[ ] To-do List"   : to_do_screen        ,
                            "[ ] File Manager" : file_manager_screen ,
                            "[ ] Auto Clicker" : auto_clicker        }
