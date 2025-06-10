@@ -215,7 +215,7 @@ def screenChangeMode(screen):
             elif not keyboard.is_pressed("shift"):
                 shift_pressed = False
                     
-        screen[select[1]][select[0]] = f"\033[48;2;255;255;255m{screen[select[1]][select[0]]}\033[0m"
+        screen[select[1]][select[0]] = screen[select[1]][select[0]]
         
         output(screen)
         time.sleep(0.01)
@@ -240,16 +240,14 @@ def next_generation(screen, new_screen):
                     if screen[y+i][x+j] == "#": # Check if the neighbour is alive
                         alive_neighbours += 1
 
-
-
             if screen[y][x] == "#" and alive_neighbours < 2 or alive_neighbours > 3: # underpopulation and overpopulation
                 new_screen[y].append(" ")
-            elif screen[y][x] == " " and alive_neighbours == 3: # survival
+            elif screen[y][x] == " " and alive_neighbours == 3: # reproduction
                 new_screen[y].append("#")
-            elif alive_neighbours in [2,3]: # reproduction
+            elif screen[y][x] == "#" and alive_neighbours in [2,3]: # survival
                 new_screen[y].append("#")
             else:
-                new_screen[y].append(" ")
+                new_screen[y].append(screen[y][x])
 
 
 # Screen
@@ -304,7 +302,7 @@ def game_of_life_screen():
                 running = False
         
         output(screen)
-        time.sleep(1)
+        time.sleep(0.01)
 
 
 
