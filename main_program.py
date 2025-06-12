@@ -5,6 +5,7 @@ import random
 import ctypes
 import sys
 from config import config
+import KeyDetectorWrapper as KDW
 import platform
 import subprocess
 import psutil
@@ -130,15 +131,25 @@ def colorise_logo(logo):
     return new_logo
 
 
-
+# Prints a formatted screen by joining each line of the screen matrix into a single string.
 def output(screen):
 
+    """
+    Args:
+        screen (list of list of str): A 2D list representing the screen, where each
+        sublist is a row and each character string is an element in that row.
+    """
+
     formatted_screen = []
+    # Rows
     for line in range(len(screen)):
         a = ""
+        # Columns
         for char in range(len(screen[line])):
             a += screen[line][char]
         formatted_screen.append(a)
+
+    # Prints out the formatted screen
     print("\n"*50 + "".join(formatted_screen)[0:-1], end="")
 
 
@@ -246,14 +257,42 @@ def next_generation(screen, new_screen):
                 new_screen[y].append("#")
             elif screen[y][x] == "#" and alive_neighbours in [2,3]: # survival
                 new_screen[y].append("#")
-            else:
+            else: # no change
                 new_screen[y].append(screen[y][x])
 
 
 # Screen
 
 def calculator_screen():
-    pass
+    
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+    valid_keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", "(", ")", "{", "}", "[", "]"]
+    expression = ""
+
+    running = True
+    while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+
+        if active_window == current_window:
+
+            pressed_key = KDW.getKey()
+
+            if pressed_key:
+                expression += pressed_key
+
+            if pressed_key == 27: # esc
+                running = False
+        
+        output(["\n"*height, expression])
+        time.sleep(0.01)
 
 
 def matrix_screen():
@@ -832,8 +871,9 @@ def main_screen():
     user32 = ctypes.windll.user32
     kernel32 = ctypes.windll.kernel32
     
-    unique_title = sys.argv[1]
-    kernel32.SetConsoleTitleW(unique_title)
+    if len(sys.argv) > 1:
+        unique_title = sys.argv[1]
+        kernel32.SetConsoleTitleW(unique_title)
 
     os.system("")
     size = os.get_terminal_size()
