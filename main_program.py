@@ -272,8 +272,38 @@ def calculator_screen():
     width = size.columns
     height = size.lines
 
-    valid_keys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "-", "*", "/", "(", ")", "{", "}", "[", "]"]
+    valid_keys = {
+        48: "0",  # 0x30
+        49: "1",  # 0x31
+        50: "2",  # 0x32
+        51: "3",  # 0x33
+        52: "4",  # 0x34
+        53: "5",  # 0x35
+        54: "6",  # 0x36
+        55: "7",  # 0x37
+        56: "8",  # 0x38
+        57: "9",  # 0x39
+
+        # Operator characters
+        43: "+",  # 0x2B (ASCII for plus)
+        45: "-",  # 0x2D (ASCII for minus)
+        42: "*",  # 0x2A (ASCII for asterisk)
+        47: "/",  # 0x2F (ASCII for slash)
+
+        # Parentheses
+        40: "(",  # 0x28 (ASCII for left parenthesis)
+        41: ")",  # 0x29 (ASCII for right parenthesis)
+
+        # Curly braces
+        123: "{", # 0x7B (ASCII for left curly brace)
+        125: "}", # 0x7D (ASCII for right curly brace)
+
+        # Square brackets
+        91: "[",  # 0x5B (ASCII for left square bracket)
+        93: "]",  # 0x5D (ASCII for right square bracket)
+    }
     expression = ""
+    key_pressed = 0
 
     running = True
     while running:
@@ -285,9 +315,20 @@ def calculator_screen():
 
             pressed_key = KDW.getKey()
 
-            if pressed_key:
-                expression += pressed_key
+            if key_pressed == 0:
+                key_pressed += 1
 
+            if pressed_key in list(valid_keys.keys()) and key_pressed == 1:
+                expression += str(valid_keys[pressed_key])
+                key_pressed = 0
+            elif key_pressed == 0:
+                key_pressed = 1
+                pressed_key = KDW.getKey()
+
+            if pressed_key == 8: # backspace
+                expression = expression[:-1]
+            if pressed_key == 61: # =
+                expression = str(eval(expression))
             if pressed_key == 27: # esc
                 running = False
         
