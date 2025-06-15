@@ -132,7 +132,7 @@ def colorise_logo(logo):
 
 
 # Prints a formatted screen by joining each line of the screen matrix into a single string.
-def output(screen):
+def output(screen, select:list=None):
 
     """
     Args:
@@ -146,6 +146,9 @@ def output(screen):
         a = ""
         # Columns
         for char in range(len(screen[line])):
+            if select == [char, line]:
+                a += "\033[48;2;255;255;255m\033[38;2;0;0;0m" + screen[line][char] + "\033[0m"
+                continue
             a += screen[line][char]
         formatted_screen.append(a)
 
@@ -153,11 +156,14 @@ def output(screen):
     print("\n"*50 + "".join(formatted_screen)[0:-1], end="")
 
 
+# Makes an empty screen with border
 def makeScreen(screen, width, height):
-    """Makes an empty screen with border"""
 
+    # Each Column
     for y in range(height):
         screen.append([])
+
+        # Each Cell
         for x in range(width):
             screen[y].append(" ")
 
@@ -219,16 +225,14 @@ def screenChangeMode(screen):
                 space_pressed = True
             elif not keyboard.is_pressed("space"):
                 space_pressed = False
-
+            
             if keyboard.is_pressed("shift") and not shift_pressed:
                 running = False
                 shift_pressed = True
             elif not keyboard.is_pressed("shift"):
                 shift_pressed = False
-                    
-        screen[select[1]][select[0]] = screen[select[1]][select[0]]
         
-        output(screen)
+        output(screen, select)
         time.sleep(0.01)
     
     return screen
@@ -238,6 +242,10 @@ def next_generation(screen, new_screen):
     for y in range(len(screen)):
         new_screen.append([])
         for x in range(len(screen[y])):
+            if screen[y][x] == "\033[38;2;0;0;0m\033[48;2;255;255;255m#\033[0m":
+                screen[y][x] = "#"
+            elif screen[y][x] == "\033[38;2;0;0;0m\033[48;2;255;255;255m \033[0m":
+                screen[y][x] = " "
             alive_neighbours = 0
 
             for i in range(-1,2):
@@ -273,6 +281,7 @@ def calculator_screen():
     height = size.lines
 
     valid_keys = {
+        # Numbers
         48: "0",  # 0x30
         49: "1",  # 0x31
         50: "2",  # 0x32
@@ -301,6 +310,9 @@ def calculator_screen():
         # Square brackets
         91: "[",  # 0x5B (ASCII for left square bracket)
         93: "]",  # 0x5D (ASCII for right square bracket)
+    
+        # Period
+        46: "."   # 0x2E (ASCII for period)
     }
     expression = ""
     key_pressed = 0
@@ -328,11 +340,13 @@ def calculator_screen():
             if pressed_key == 8: # backspace
                 expression = expression[:-1]
             if pressed_key == 61: # =
+                while expression[0] == "0":
+                    expression = expression[1:]
                 expression = str(eval(expression))
             if pressed_key == 27: # esc
                 running = False
         
-        output(["\n"*height, expression])
+        output(["\n"*height, expression, "\n"])
         time.sleep(0.01)
 
 

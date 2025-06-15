@@ -21,6 +21,7 @@ class Bullet
         char character;
         vector<int> direction;
         int directionInt;
+        int speed;
     public:
 
         // Constructor
@@ -36,7 +37,8 @@ class Bullet
                         default: return { 0, 0};
                     };
                 }()),
-            character('+') // The character representing the bullet.
+            character('+'), // The character representing the bullet.
+            speed(3) // The speed of the bullet
         {
 
         }
@@ -51,17 +53,15 @@ class Bullet
 
         // Moves the bullet in the current direction by updating its position.
         int move(vector<vector<char>>& screen, const int width, const int height){
-            // Moves the bullet according to its direction.
-            position.at(0) += direction.at(0);
-            position.at(1) += direction.at(1);
+            for(int i = 0; i < speed; i++){
+                // Moves the bullet according to its direction.
+                position.at(0) += direction.at(0);
+                position.at(1) += direction.at(1);
 
-            if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
-                return 2; // if the bullet has moved out of screen bounds.
-            };
-            if(screen.at(position.at(1)).at(position.at(0)) == 'O'){
-                return 1; // if the bullet hits an enemy.
+                if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
+                    return 2; // if the bullet has moved out of screen bounds.
+                };
             }
-
             return 0; // if the bullet moves successfully without hitting anything.
         }
 
@@ -161,7 +161,7 @@ class Player
 
         Player(vector<int> pos):
             position(pos), // The position of the player.
-            dashDistance(3), // The distance the player dashes.
+            dashDistance(2), // The distance the player dashes.
             dash_toggle(false), // The state of the dash.
             dashDirection({1,0}), // The direction of the dash.
             dashDirectionInt(1), // The direction of the dash as an integer.
