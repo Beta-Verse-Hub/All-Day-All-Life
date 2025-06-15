@@ -168,6 +168,7 @@ def makeScreen(screen, width, height):
             screen[y].append(" ")
 
 
+# A mode for editing the game of life screen's screen
 def screenChangeMode(screen):
     
     user32 = ctypes.windll.user32
@@ -177,6 +178,7 @@ def screenChangeMode(screen):
     width = size.columns
     height = size.lines
 
+    # Initialises the key press booleans
     up_pressed = True
     down_pressed = True
     left_pressed = True
@@ -186,6 +188,7 @@ def screenChangeMode(screen):
 
     running = True
     select = [2,2]
+
     while running:
 
         active_window = user32.GetForegroundWindow()
@@ -193,30 +196,35 @@ def screenChangeMode(screen):
 
         if active_window == current_window:
 
+            # Select goes up 
             if keyboard.is_pressed("up") and not up_pressed:
                 select[1] -= 1
                 up_pressed = True
             elif not keyboard.is_pressed("up"):
                 up_pressed = False
             
+            # Select goes down
             if keyboard.is_pressed("down") and not down_pressed:
                 select[1] += 1
                 down_pressed = True
             elif not keyboard.is_pressed("down"):
                 down_pressed = False
             
+            # Select goes left
             if keyboard.is_pressed("left") and not left_pressed:
                 select[0] -= 1
                 left_pressed = True
             elif not keyboard.is_pressed("left"):
                 left_pressed = False
             
+            # Select goes right
             if keyboard.is_pressed("right") and not right_pressed:
                 select[0] += 1
                 right_pressed = True
             elif not keyboard.is_pressed("right"):
                 right_pressed = False
 
+            # Change select
             if keyboard.is_pressed("space") and not space_pressed:
                 if screen[select[1]][select[0]] == "#":
                     screen[select[1]][select[0]] = " "
@@ -226,12 +234,14 @@ def screenChangeMode(screen):
             elif not keyboard.is_pressed("space"):
                 space_pressed = False
             
+            # Stop
             if keyboard.is_pressed("shift") and not shift_pressed:
                 running = False
                 shift_pressed = True
             elif not keyboard.is_pressed("shift"):
                 shift_pressed = False
         
+        # output the screen
         output(screen, select)
         time.sleep(0.01)
     
