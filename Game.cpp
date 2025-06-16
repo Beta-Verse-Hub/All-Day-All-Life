@@ -58,7 +58,9 @@ class Bullet
                 position.at(0) += direction.at(0);
                 position.at(1) += direction.at(1);
 
-                if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
+                if(screen.at(position.at(1)).at(position.at(0)) == 'O'){
+                    return 1; // If the bullet hits an enemy.
+                }else if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
                     return 2; // if the bullet has moved out of screen bounds.
                 };
             }
@@ -305,12 +307,13 @@ int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector
     
         if (hit_enemy == 1) { // Check if the bullet has hit an enemy
             shotted_enemy = find_shotted_enemy(Enemies, bullet.getPosition());
-            return true;
+            return true; // Remove the bullet
         }else if (hit_enemy == 2) { // Check if the bullet has hit the boundary
-            return true;
-        };
-        bullet.addToScreen(screen);
-        return false;
+            return true; // Remove the bullet
+        }else { // If the bullet has not hit anything
+            bullet.addToScreen(screen); // Add the character of the bullet to the screen
+            return false; // Do not remove the bullet
+        }
     });
     
     // erase bullets

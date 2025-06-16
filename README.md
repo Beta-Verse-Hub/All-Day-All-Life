@@ -70,6 +70,39 @@ Make the logo in a txt file, save it in the Logos directory and add it's correct
 
 esc - to exit
 
+### DVD
+Remember the animation where a dvd logo bounces around the screen. This program is a replicated version of that animation but it is very responsive to window size changes and it changes color when it hits the border.
+
+esc - to exit
+
+### Pipes
+pipes.sh but windows-only!
+Don't changes the window size after running it (if you want to then exit to the main menu and then change the window size)
+
+esc - to exit
+
+### Matrix
+A cmatrix program on windows? yes.
+
+esc - to exit
+### Calculator
+...
+
+### Game of Life
+The classic conway's game of life n the terminal!
+
+There are two modes:
+- Simulation mode
+- Edit mode
+
+In the simulation mode the following rules apply:
+1. Each cell is either dead or alive.
+2. Living cells with 2 or 3 living neighbours lives (Survival).
+3. Living cells with less than 2 living neighbours dies (Underpopulation).
+4. Living cells with more than 3 living neighbours dies (Overpopulation).
+5. Dead cells with exactly 3 living neighbours becomes alive  (Reproduction).
+
+
 ### To-Do List
 It is a to-do list which stores the data in a txt file in this format:
 
@@ -97,22 +130,5 @@ left arrow - go outside a folder or drive
 right arrow - go inside a folder or drive or run a file
 esc - to exit
 
-### DVD
-Remember the animation where a dvd logo bounces around the screen. This program is a replicated version of that animation but it is very responsive to window size changes and it changes color when it hits the border.
-
-esc - to exit
-
-### Pipes
-pipes.sh but windows-only!
-Don't changes the window size after running it (if you want to then exit to the main menu and then change the window size)
-
-esc - to exit
-### Matrix
-cmatrix on window? yes, please.
-
-**It is still in development so don't use it for now**
-
 ### Auto Clicker
 **It is still in development so don't use it for now**
-
-Note:- **There is a game in progress too.**

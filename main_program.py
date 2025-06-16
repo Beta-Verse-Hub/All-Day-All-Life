@@ -1,3 +1,4 @@
+# Imports
 import os
 import keyboard
 import time
@@ -14,8 +15,24 @@ from pynput.mouse import Controller, Button
 
 
 
+# Initializes variables (user32, kernel32, size, width and height)
+def init_variables():
+    
+    # Globalize them
+    global user32, kernel32, size, width, height
+
+    # Get user32 and kernel32
+    user32 = ctypes.windll.user32
+    kernel32 = ctypes.windll.kernel32
+
+    # Get terminal size
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+
 # Updates the 'Data/config.txt' file with the current configuration.
-def updateConfig():
+def update_config():
 
     configuration = config
 
@@ -134,12 +151,6 @@ def colorise_logo(logo):
 # Prints a formatted screen by joining each line of the screen matrix into a single string.
 def output(screen, select:list=None):
 
-    """
-    Args:
-        screen (list of list of str): A 2D list representing the screen, where each
-        sublist is a row and each character string is an element in that row.
-    """
-
     formatted_screen = []
     # Rows
     for line in range(len(screen)):
@@ -171,12 +182,7 @@ def makeScreen(screen, width, height):
 # A mode for editing the game of life screen's screen
 def screenChangeMode(screen):
     
-    user32 = ctypes.windll.user32
-    kernel32 = ctypes.windll.kernel32
-
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
+    init_variables()
 
     # Initialises the key press booleans
     up_pressed = True
@@ -451,7 +457,7 @@ def about_screen():
             "RESOLUTION"           : width + "x" + height,
             "ARCHITECTURE"         : platform.machine(),
             "PROCESSOR"            : platform.processor(),
-            "MEMORY"               : f"{used_mem_gb} GiB / {total_mem_gb} GiB"
+            "MEMORY"               : f"{used_mem_gb:.2f} GiB / {total_mem_gb:.2f} GiB"
             }
     for i in list(info.keys()):
         print(i, info[i])
@@ -627,7 +633,7 @@ def auto_clicker():
     os.system("cls")
     mouse = Controller()
 
-    print("press space to start the program")
+    print("press enter to start the program")
 
     while not keyboard.is_pressed("enter"):
         input()
@@ -643,9 +649,7 @@ def auto_clicker():
 
     print("press esc to stop")
 
-    for i in reversed(range(delay)):
-        print(i+1)
-        time.sleep(1)
+    time.sleep(delay)
     
     while not keyboard.is_pressed("esc"):
         mouse.click(button)
@@ -913,8 +917,7 @@ def to_do_screen():
                 enter_key_pressed = False
 
             if shift_key_pressed:
-                
-                text = input(" " + str(select) + ": ")
+                text = input(" " + str(select) + ": ") + " "
                 to_do_data[select-1][0] = text
                 enter_key_pressed = True
 
