@@ -14,12 +14,12 @@ from pynput.mouse import Controller, Button
 
 
 
-# Updates the 'config.txt' file with the current configuration.
+# Updates the 'Data/config.txt' file with the current configuration.
 def updateConfig():
 
     configuration = config
 
-    with open("config.txt", "w") as config:
+    with open("Data/config.txt", "w") as config:
         # Clears the file
         config.truncate()
     
@@ -47,10 +47,10 @@ def list_drives():
     return drives
 
 
-# Reads and returns the to-do list's data from the 'to-do-data.txt' file as a list of lists.
+# Reads and returns the to-do list's data from the 'Data/to-do-data.txt' file as a list of lists.
 def get_to_do_data():
 
-    with open("to-do-data.txt","r+") as data:
+    with open("Data/to-do-data.txt","r+") as data:
         data = data.readlines()
     
     modified_data = []
@@ -75,7 +75,7 @@ def get_to_do_data():
     return modified_data
 
 
-# Writes the to-do list's data to the 'to-do-data.txt' file
+# Writes the to-do list's data to the 'Data/to-do-data.txt' file
 def set_to_do_data(to_do_data):
 
     modified_data = []
@@ -87,7 +87,7 @@ def set_to_do_data(to_do_data):
         modified_data.append(i[1])
 
     # Clears and then writes the data
-    with open("to-do-data.txt","r+") as data:
+    with open("Data/to-do-data.txt","r+") as data:
         data.truncate()
         data.write("\n".join(modified_data))
     
@@ -412,7 +412,7 @@ def game_of_life_screen():
 
 def about_screen():
 
-    with open(f"custom_logo_file_path.txt", "r") as custom_logo_file_path:
+    with open(f"Data/custom_logo_file_path.txt", "r") as custom_logo_file_path:
         
         custom_logo_file_path = custom_logo_file_path.read()
 
