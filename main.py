@@ -59,7 +59,7 @@ os.system('echo "\033]0;window_0\007"')
 running = True
 
 windows = {"window_0" : [[0,0], [1,2]]}
-with open("grid.txt", "r") as grid_data:
+with open("Data/grid.txt", "r") as grid_data:
     grid_data = grid_data.readlines()
     grid = [int(grid_data[0]), int(grid_data[1])]
 
