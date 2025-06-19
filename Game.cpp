@@ -54,14 +54,18 @@ class Bullet
         // Moves the bullet in the current direction by updating its position.
         int move(vector<vector<char>>& screen, const int width, const int height){
             for(int i = 0; i < speed; i++){
-                // Moves the bullet according to its direction.
-                position.at(0) += direction.at(0);
-                position.at(1) += direction.at(1);
+                // The next position of the bullet.
+                int nextX = position.at(0) + direction.at(0);
+                int nextY = position.at(1) + direction.at(1);
 
-                if(screen.at(position.at(1)).at(position.at(0)) == 'O'){
-                    return 1; // If the bullet hits an enemy.
-                }else if(position.at(0) > width-2 || position.at(0) < 0 || position.at(1) > height-1 || position.at(1) < 0){
+                if(nextX >= (width - 1) || nextX < 0 || nextY >= height || nextY < 0){
                     return 2; // if the bullet has moved out of screen bounds.
+                }else if(screen.at(nextY).at(nextX) == 'O'){
+                    return 1; // If the bullet hits an enemy.
+                }else{
+                    // Move the bullet.
+                    position.at(0) = nextX;
+                    position.at(1) = nextY;
                 };
             }
             return 0; // if the bullet moves successfully without hitting anything.

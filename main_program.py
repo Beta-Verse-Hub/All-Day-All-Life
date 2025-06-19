@@ -358,7 +358,11 @@ def calculator_screen():
             if pressed_key == 61: # =
                 while expression[0] == "0":
                     expression = expression[1:]
-                expression = str(eval(expression))
+                try:
+                    expression = str(eval(expression))
+                except SyntaxError as e:
+                    print("Invalid expression")
+                    time.sleep(3)
             if pressed_key == 27: # esc
                 running = False
         
@@ -457,7 +461,7 @@ def about_screen():
             "RESOLUTION"           : width + "x" + height,
             "ARCHITECTURE"         : platform.machine(),
             "PROCESSOR"            : platform.processor(),
-            "MEMORY"               : f"{used_mem_gb:.2f} GiB / {total_mem_gb:.2f} GiB"
+            "MEMORY"               : f"{used_mem_gb:.2f} GiB / {total_mem_gb:.2f} GiB (Available : {available_mem_gb:.2f} GiB)",
             }
     for i in list(info.keys()):
         print(i, info[i])

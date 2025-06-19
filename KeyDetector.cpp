@@ -5,5 +5,8 @@ using namespace std;
 extern "C" __declspec(dllexport)
 
 int get_key() {
-    return _getch();
+    if(_kbhit()){
+        return _getch();
+    }
+    return -1;
 }
