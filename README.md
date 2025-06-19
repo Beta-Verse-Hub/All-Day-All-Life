@@ -82,7 +82,7 @@ Don't changes the window size after running it (if you want to then exit to the 
 esc - to exit
 
 ### Matrix
-A cmatrix program on windows? yes.
+A cmatrix program on windows? mmhm, yes please.
 
 esc - to exit
 ### Calculator
@@ -95,13 +95,21 @@ There are two modes:
 - Simulation mode
 - Edit mode
 
-In the simulation mode the following rules apply:
+In the simulation mode, the following rules apply:
+
 1. Each cell is either dead or alive.
 2. Living cells with 2 or 3 living neighbours lives (Survival).
 3. Living cells with less than 2 living neighbours dies (Underpopulation).
 4. Living cells with more than 3 living neighbours dies (Overpopulation).
 5. Dead cells with exactly 3 living neighbours becomes alive  (Reproduction).
 
+In the edit mode, use the following keys:
+
+up arrow / down arrow - to scroll through the grid
+left arrow / right arrow - to scroll through the grid
+space - to toggle the cell
+
+use shift to change mode and esc to exit
 
 ### To-Do List
 It is a to-do list which stores the data in a txt file in this format:
