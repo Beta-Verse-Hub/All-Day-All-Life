@@ -285,6 +285,16 @@ def next_generation(screen, new_screen):
                 new_screen[y].append(screen[y][x])
 
 
+def colorise_expression(expression):
+    new_expression = ""
+    for i in range(len(expression)):
+        if expression[i] in ["0","1","2","3","4","5","6","7","8","9"]:
+            new_expression += f"\033[48;2;0;0;0m\033[38;2;{config["Calculator Color 1 Red"]};{config["Calculator Color 1 Green"]};{config["Calculator Color 1 Blue"]}m{i}\033[0m"
+        else:
+            new_expression += f"\033[48;2;0;0;0m\033[38;2;{config["Calculator Color 2 Red"]};{config["Calculator Color 2 Green"]};{config["Calculator Color 2 Blue"]}m{i}\033[0m"
+    expression = new_expression
+
+
 # Screen
 
 def calculator_screen():
@@ -366,6 +376,7 @@ def calculator_screen():
             if pressed_key == 27: # esc
                 running = False
         
+        colorise_expression(expression)
         output(["\n"*height, expression, "\n"])
         time.sleep(0.01)
 
