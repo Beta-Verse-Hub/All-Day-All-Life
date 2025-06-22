@@ -13,7 +13,8 @@ types = ("unchangable",
 def get_config():
     return config
 
-def check_value_limit(val, type):
+
+def check_value_limit(val : int, type : str):
     if val < 0:
         val = 0
         print(f"The {type} value should be more than 0! (it has been set to 0 for now)")
@@ -35,4 +36,11 @@ def rgb_input():
     check_value_limit(b, "blue")
 
     return [r, g, b]
-    
+
+def format_settings_screen(configuration : list, screen_width : int):
+    formatted_configuration = ""
+
+    for i in configuration:
+        formatted_configuration += f" {i[0]} :{(screen_width-len(i[0])-len(i[1])-4)*" "}{i[1]}\n"
+
+    return formatted_configuration

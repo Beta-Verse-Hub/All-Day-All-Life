@@ -31,6 +31,15 @@ def init_variables():
     height = size.lines
 
 
+# Updates the size of the terminal
+def update_size():
+    global size, width, height
+
+    size = os.get_terminal_size()
+    width = size.columns
+    height = size.lines
+
+
 # Updates the 'Data/config.txt' file with the current configuration.
 def update_config():
 
@@ -308,6 +317,8 @@ def settings_screen():
         active_window = user32.GetForegroundWindow()
         current_window = kernel32.GetConsoleWindow()
 
+        update_size()
+
         configuration = config.get_config()
 
         if active_window == current_window:
@@ -317,7 +328,7 @@ def settings_screen():
             if pressed_key == 27: # esc
                 running = False
         
-        output(["\n"*height, screen, "\n"])
+        output(["\n"*height, config.format_settings_screen(configuration, width), "\n"])
         time.sleep(0.01)
 
 
