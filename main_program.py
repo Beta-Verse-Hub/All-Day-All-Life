@@ -5,7 +5,7 @@ import time
 import random
 import ctypes
 import sys
-from config import config
+import config
 import KeyDetectorWrapper as KDW
 import platform
 import subprocess
@@ -295,7 +295,31 @@ def colorise_expression(expression):
     expression = new_expression
 
 
-# Screen
+# Screens
+
+def settings_screen():
+
+    init_variables()
+
+    screen = []   
+    running = True
+    while running:
+
+        active_window = user32.GetForegroundWindow()
+        current_window = kernel32.GetConsoleWindow()
+
+        configuration = config.get_config()
+
+        if active_window == current_window:
+
+            pressed_key = KDW.getKey()
+
+            if pressed_key == 27: # esc
+                running = False
+        
+        output(["\n"*height, screen, "\n"])
+        time.sleep(0.01)
+
 
 def calculator_screen():
     
@@ -428,7 +452,6 @@ def game_of_life_screen():
         
         output(screen)
         time.sleep(0.01)
-
 
 
 def about_screen():
@@ -971,7 +994,8 @@ def main_screen():
                            "[ ] Game of Life" : game_of_life_screen ,
                            "[ ] To-do List"   : to_do_screen        ,
                            "[ ] File Manager" : file_manager_screen ,
-                           "[ ] Auto Clicker" : auto_clicker        }
+                           "[ ] Auto Clicker" : auto_clicker        ,
+                           "[ ] Settings"     : settings_screen     }
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0
