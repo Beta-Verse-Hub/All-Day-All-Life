@@ -37,10 +37,15 @@ def rgb_input():
 
     return [r, g, b]
 
-def format_settings_screen(configuration : list, screen_width : int):
+def format_settings_screen(configuration : list, screen_width : int, select : int):
     formatted_configuration = ""
 
-    for i in configuration:
+    for index in range(len(configuration)):
+        i = configuration[index]
+
+        if select == i:
+            formatted_configuration += f" {i[0]} :{(screen_width-len(i[0])-len(i[1])-4)*" "}\033[38;2;0;0;0m\033[48;2;255;255;255m{i[1]}\033[0m\n"    
+        
         formatted_configuration += f" {i[0]} :{(screen_width-len(i[0])-len(i[1])-4)*" "}{i[1]}\n"
 
     return formatted_configuration

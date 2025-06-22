@@ -310,7 +310,12 @@ def settings_screen():
 
     init_variables()
 
-    screen = []   
+    screen = []
+    select = 0
+
+    up_key_pressed = True
+    down_key_pressed = True
+
     running = True
     while running:
 
@@ -325,10 +330,24 @@ def settings_screen():
 
             pressed_key = KDW.getKey()
 
+            if keyboard.is_pressed("up") and select > 1 and not up_key_pressed:
+                select -= 1
+                up_key_pressed = True
+            
+            elif not keyboard.is_pressed("up"):
+                up_key_pressed = False
+
+            if keyboard.is_pressed("down") and select < len(configuration)-2 and not down_key_pressed:
+                select += 1
+                down_key_pressed = True
+            
+            elif not keyboard.is_pressed("down"):
+                down_key_pressed = False
+
             if pressed_key == 27: # esc
                 running = False
         
-        output(["\n"*height, config.format_settings_screen(configuration, width), "\n"])
+        output(["\n"*height, config.format_settings_screen(configuration, width, select), "\n"])
         time.sleep(0.01)
 
 
@@ -707,12 +726,7 @@ def auto_clicker():
 
 def file_manager_screen():
     
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
-
-    user32 = ctypes.windll.user32
-    kernel32 = ctypes.windll.kernel32
+    init_variables()
 
     select = 0
     path = config["Main Path"]
@@ -728,9 +742,7 @@ def file_manager_screen():
 
     while running:
 
-        size = os.get_terminal_size()
-        width = size.columns
-        height = size.lines
+        update_size()
 
         active_window = user32.GetForegroundWindow()
         current_window = kernel32.GetConsoleWindow()
