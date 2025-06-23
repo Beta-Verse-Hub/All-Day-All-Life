@@ -337,7 +337,7 @@ def settings_screen():
             elif not keyboard.is_pressed("up"):
                 up_key_pressed = False
 
-            if keyboard.is_pressed("down") and select < len(configuration)-2 and not down_key_pressed:
+            if keyboard.is_pressed("down") and select < len(configuration)-1 and not down_key_pressed:
                 select += 1
                 down_key_pressed = True
             
