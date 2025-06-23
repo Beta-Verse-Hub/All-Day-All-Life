@@ -296,12 +296,13 @@ def next_generation(screen, new_screen):
 
 def colorise_expression(expression):
     new_expression = ""
+    configuration = config.get_config()
     for i in range(len(expression)):
         if expression[i] in ["0","1","2","3","4","5","6","7","8","9"]:
-            new_expression += f"\033[48;2;0;0;0m\033[38;2;{config["Calculator Color 1 Red"]};{config["Calculator Color 1 Green"]};{config["Calculator Color 1 Blue"]}m{i}\033[0m"
+            new_expression += f"\033[48;2;0;0;0m\033[38;2;{configuration["Calculator Color 1"][0][0]};{configuration["Calculator Color 1"][0][1]};{configuration["Calculator Color 1"][0][2]}m{expression[i]}\033[0m"
         else:
-            new_expression += f"\033[48;2;0;0;0m\033[38;2;{config["Calculator Color 2 Red"]};{config["Calculator Color 2 Green"]};{config["Calculator Color 2 Blue"]}m{i}\033[0m"
-    expression = new_expression
+            new_expression += f"\033[48;2;0;0;0m\033[38;2;{configuration["Calculator Color 2"][0][0]};{configuration["Calculator Color 2"][0][1]};{configuration["Calculator Color 2"][0][2]}m{expression[i]}\033[0m"
+    return new_expression
 
 
 # Screens
@@ -430,8 +431,8 @@ def calculator_screen():
             if pressed_key == 27: # esc
                 running = False
         
-        colorise_expression(expression)
-        output(["\n"*height, expression, "\n"])
+        expression = colorise_expression(expression)
+        output(expression + "\n")
         time.sleep(0.01)
 
 

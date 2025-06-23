@@ -39,14 +39,15 @@ def rgb_input():
 
 def format_settings_screen(configuration : list, screen_width : int, select : int):
     formatted_configuration = ""
+    keys = list(configuration.keys())
 
     for index in range(len(configuration)):
         i = configuration[index]
 
         if select == index:
-            formatted_configuration += f" {i[0]}{(screen_width-len(i[0])-len(i[1])-2)*" "}\033[38;2;0;0;0m\033[48;2;255;255;255m{i[1]}\033[0m\n"    
+            formatted_configuration += f" {keys[index]}{(screen_width-len(keys[index])-len(str(i[0]))-2)*" "}\033[38;2;0;0;0m\033[48;2;255;255;255m{i[0]}\033[0m\n"    
             continue
 
-        formatted_configuration += f" {i[0]}{(screen_width-len(i[0])-len(i[1])-2)*" "}{i[1]}\n"
+        formatted_configuration += f" {keys[index]}{(screen_width-len(keys[index])-len(str(i[0]))-2)*" "}{i[0]}\n"
 
     return formatted_configuration
