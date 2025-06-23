@@ -294,15 +294,17 @@ def next_generation(screen, new_screen):
                 new_screen[y].append(screen[y][x])
 
 
-def colorise_expression(expression):
-    new_expression = ""
+def output_expression(expression, height):
+    new_expression = "\n"*height
     configuration = config.get_config()
+
     for i in range(len(expression)):
         if expression[i] in ["0","1","2","3","4","5","6","7","8","9"]:
             new_expression += f"\033[48;2;0;0;0m\033[38;2;{configuration["Calculator Color 1"][0][0]};{configuration["Calculator Color 1"][0][1]};{configuration["Calculator Color 1"][0][2]}m{expression[i]}\033[0m"
         else:
             new_expression += f"\033[48;2;0;0;0m\033[38;2;{configuration["Calculator Color 2"][0][0]};{configuration["Calculator Color 2"][0][1]};{configuration["Calculator Color 2"][0][2]}m{expression[i]}\033[0m"
-    return new_expression
+    
+    print(new_expression, end="")
 
 
 # Screens
@@ -344,6 +346,9 @@ def settings_screen():
             
             elif not keyboard.is_pressed("down"):
                 down_key_pressed = False
+
+            if keyboard.is_pressed("shift"):
+                pass
 
             if pressed_key == 27: # esc
                 running = False
@@ -431,8 +436,7 @@ def calculator_screen():
             if pressed_key == 27: # esc
                 running = False
         
-        expression = colorise_expression(expression)
-        output(expression + "\n")
+        output_expression(expression, height)
         time.sleep(0.01)
 
 

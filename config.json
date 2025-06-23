@@ -1,6 +1,7 @@
 {
-    "Attribute"          : ["Value"        , "unchangable"],
-    "Main Path"          : ["C:/"          , "text"       ],
-    "Calculator Color 1" : [["0","255","0"], "rgb"        ],
-    "Calculator Color 2" : [["255","0","0"], "rgb"        ]
+    "Attribute"          : ["Value"            , "unchangable"],
+    "Main Path"          : ["C:/"              , "text"       ],
+    "Calculator Color 1" : [["0","255","0"]    , "rgb"        ],
+    "Calculator Color 2" : [["255","0","0"]    , "rgb"        ],
+    "To Do List Color"   : [["255","255","255"], "rgb"        ]
 }
