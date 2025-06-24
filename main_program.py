@@ -314,7 +314,7 @@ def settings_screen():
     init_variables()
 
     screen = []
-    select = 0
+    select = 1
 
     up_key_pressed = True
     down_key_pressed = True
@@ -348,7 +348,7 @@ def settings_screen():
                 down_key_pressed = False
 
             if keyboard.is_pressed("shift"):
-                pass
+                config.get_input(select)
 
             if pressed_key == 27: # esc
                 running = False
