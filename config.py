@@ -37,26 +37,27 @@ def check_value_limit(val : int, type : str):
     if val < 0:
         val = 0
         print(f"The {type} value should be more than 0! (it has been set to 0 for now)")
+        time.sleep(1)
     elif val > 255:
         val = 255
         print(f"The {type} value should be less than 255! (it has been set to 255 for now)")
-    
-    time.sleep(3)
+        time.sleep(1)
+    return val
 
 
 # A function that takes input for RGB values and checks if the values are in the correct range (0 to 255)
 def rgb_input():
 
     r = int(input("Give red value (0 to 255) : "))
-    check_value_limit(r, "red")
+    r = check_value_limit(r, "red")
     
     g = int(input("Give green value (0 to 255) : "))
-    check_value_limit(g, "green")
+    g = check_value_limit(g, "green")
 
     b = int(input("Give blue value (0 to 255) : "))
-    check_value_limit(b, "blue")
+    b = check_value_limit(b, "blue")
 
-    return [r, g, b]
+    return [str(r), str(g), str(b)]
 
 def format_settings_screen(configuration : list, screen_width : int, select : int):
     formatted_configuration = ""
