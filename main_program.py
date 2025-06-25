@@ -19,7 +19,7 @@ from pynput.mouse import Controller, Button
 def init_variables():
     
     # Globalize them
-    global user32, kernel32, size, width, height
+    global user32, kernel32, size, width, height, configuration
 
     # Get user32 and kernel32
     user32 = ctypes.windll.user32
@@ -29,6 +29,9 @@ def init_variables():
     size = os.get_terminal_size()
     width = size.columns
     height = size.lines
+
+    # Get configuration
+    configuration = config.get_config()
 
 
 # Updates the size of the terminal
@@ -839,14 +842,10 @@ def file_manager_screen():
 
 
 def to_do_screen():
-
-    user32 = ctypes.windll.user32
-    kernel32 = ctypes.windll.kernel32
-
+    
+    init_variables()
+    
     to_do_data = get_to_do_data()
-    size = os.get_terminal_size()
-    width = size.columns
-    height = size.lines
 
     insert_key_pressed = False
     del_key_pressed = False
@@ -897,15 +896,16 @@ def to_do_screen():
             else:
                 screen[y*2+1][2] = "\033[38;2;255;0;0mX\033[0m"
 
+            screen[y*2+1][4] = f"\033[38;2;{configuration["To Do List Color"][0][0]};{configuration["To Do List Color"][0][1]};{configuration["To Do List Color"][0][2]}m "
+
             for x in range(width - 6):
                 if len(str(to_do_data[y+start_element][0]))-2 < x:
                     break
 
-                if ticked:
-                    screen[y*2+1][x+5] = "\033[4m" + str(to_do_data[y+start_element][0])[x] + "\033[0m"
-                else:
-                    screen[y*2+1][x+5] = str(to_do_data[y+start_element][0])[x]
-            
+                screen[y*2+1][x+5] = str(to_do_data[y+start_element][0])[x]
+
+            screen[y*2+1][width-6] = f" \033[0m"
+
             if y == 0:
                 for x in range(width - 2):
                     try:

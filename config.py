@@ -33,6 +33,7 @@ def get_input(select):
             print("Give an integer")
 
 
+# Checks Values limit and corrects
 def check_value_limit(val : int, type : str):
     if val < 0:
         val = 0
