@@ -7,14 +7,13 @@ config_keys = list(config.keys())
 config_values = list(config.values())
 
 
-types = ("unchangable",
-         "rgb",
-         "text",
-         "value")
-
-
 def get_config():
     return config
+
+
+def update_config(given_configuration):
+    with open("config.json", "w") as out_file:
+        json.dump(given_configuration, out_file, indent = 6)
 
 
 def get_input(select):
@@ -26,11 +25,6 @@ def get_input(select):
         config_values[select][0] = rgb_input()
     elif settings_type == "text":
         config_values[select][0] = input(f"Give {config_keys[select]} : ")
-    elif settings_type == "value":
-        try:
-            config_values[select][0] = int(input(f"Give {config_keys[select]} : "))
-        except ValueError:
-            print("Give an integer")
 
 
 # Checks Values limit and corrects
