@@ -52,28 +52,40 @@ class Bullet
         //            ( 0, 1)
 
         // Moves the bullet in the current direction by updating its position.
+        // In Bullet::move
         int move(vector<vector<char>>& screen, const int width, const int height){
-            for(int i = 0; i < speed; i++){
-                // The next position of the bullet.
-                int nextX = position.at(0) + direction.at(0);
-                int nextY = position.at(1) + direction.at(1);
-
-                if(nextX >= (width - 1) || nextX < 0 || nextY >= height || nextY < 0){
-                    return 2; // if the bullet has moved out of screen bounds.
-                }else if(screen.at(nextY).at(nextX) == 'O'){
-                    return 1; // If the bullet hits an enemy.
-                }else{
-                    // Move the bullet.
-                    position.at(0) = nextX;
-                    position.at(1) = nextY;
-                };
+            // Clear the bullet's current position on the screen before moving
+            // This is crucial for visual removal
+            if (position.at(1) >= 0 && position.at(1) < height &&
+                position.at(0) >= 0 && position.at(0) < width) {
+                screen.at(position.at(1)).at(position.at(0)) = ' ';
             }
+
+            // The next position of the bullet.
+            int nextX = position.at(0) + direction.at(0);
+            int nextY = position.at(1) + direction.at(1);
+
+            if(nextX >= (width - 1) || nextX < 0 || nextY >= height || nextY < 0){
+                return 2; // if the bullet has moved out of screen bounds.
+            } else if (screen.at(nextY).at(nextX) == 'O'){
+                return 1; // If the bullet hits an enemy
+            } else { // If the bullet has not hit anything
+                // Move the bullet.
+                position.at(0) = nextX;
+                position.at(1) = nextY;
+            };
+
             return 0; // if the bullet moves successfully without hitting anything.
         }
 
         // Returns the current position of the bullet.
         vector<int> getPosition() const{
             return position;
+        }
+
+
+        vector<int> getDirection() const{
+            return direction;
         }
 
         // Adds the character of the bullet to the screen at its current position.
@@ -288,10 +300,11 @@ vector<vector<char>> makeScreen(const int width, const int height){
 
 
 // Finds the index of the enemy which has been shot by the given bullet.
-int find_shotted_enemy(vector<Enemy>& Enemies, vector<int> bulletPosition){
+int find_shotted_enemy(vector<Enemy>& Enemies, vector<int> bulletPosition, vector<int> bulletDirection){
     for(int i = 0; i < Enemies.size(); i++){
         // If the position of the bullet is the same as the position of the enemy
-        if(bulletPosition == Enemies.at(i).getPosition()){
+        vector<int> bulletPositionAccordingToTheDirection = {bulletPosition.at(0) + bulletDirection.at(0), bulletPosition.at(1) + bulletDirection.at(1)};
+        if(bulletPosition == Enemies.at(i).getPosition() || bulletPositionAccordingToTheDirection == Enemies.at(i).getPosition()){
             // Return the index of the enemy
             return i;
         }
@@ -310,7 +323,7 @@ int addAndMoveAllBullets(vector<Bullet>& Bullets, vector<Enemy>& Enemies, vector
         int hit_enemy = bullet.move(screen, width, height);
     
         if (hit_enemy == 1) { // Check if the bullet has hit an enemy
-            shotted_enemy = find_shotted_enemy(Enemies, bullet.getPosition());
+            shotted_enemy = find_shotted_enemy(Enemies, bullet.getPosition(), bullet.getDirection());
             return true; // Remove the bullet
         }else if (hit_enemy == 2) { // Check if the bullet has hit the boundary
             return true; // Remove the bullet
