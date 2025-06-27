@@ -86,10 +86,20 @@ A cmatrix program on windows? mmhm, yes please.
 
 esc - to exit
 ### Calculator
-...
+A calculator on the terminal.
+
+Available characters:
+- 0-9 : numbers
+- + : addition
+- - : subtraction
+- * : multiplication
+- / : division
+
+= - to evaluate the expression
+esc - to exit
 
 ### Game of Life
-The classic conway's game of life n the terminal!
+The classic conway's game of life in the terminal!
 
 There are two modes:
 - Simulation mode

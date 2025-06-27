@@ -427,7 +427,7 @@ int main(){
     vector<vector<char>> screen;
     bool running = true;
     int width, height;
-    int score;
+    int score = 0;
     char key;
     Player player({0,0});
     vector<Enemy> Enemies = {};
