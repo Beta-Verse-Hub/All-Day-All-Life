@@ -491,5 +491,7 @@ int main(){
 
     cout << endl << score << endl;
 
+    Sleep(3000);
+
     return 0;
 }
