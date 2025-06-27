@@ -724,7 +724,12 @@ def auto_clicker():
         input()
         
     delay = float(input("start autoclicking after how many seconds : "))
-    each_delay = float(input("delay between each click in seconds : "))
+    each_delay = float(input("delay between each click in seconds (should be more than 0.0001 secs) : "))
+    
+    if each_delay < 0.0001:
+        print("The delay is too less, and so, it has been set as 0.0001")
+        each_delay = 0.0001
+    
     button = int(input("button to click, 0 for left, 1 for right"))
 
     if button:
@@ -737,8 +742,11 @@ def auto_clicker():
     time.sleep(delay)
     
     while not keyboard.is_pressed("esc"):
+        for i in range(int(each_delay // 0.0001)):
+            if keyboard.is_pressed("esc"):
+                break
+            time.sleep(0.0001)
         mouse.click(button)
-        time.sleep(each_delay)
 
 
 def file_manager_screen():
