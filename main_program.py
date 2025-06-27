@@ -360,6 +360,15 @@ def settings_screen():
         time.sleep(0.01)
 
 
+def a_shooter_game_screen():
+    try:
+        subprocess.run(["./Game.exe"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"An error occurred while running the game: {e}")
+    except FileNotFoundError:
+        print("The game executable was not found.")
+
+
 def calculator_screen():
     
     user32 = ctypes.windll.user32
@@ -1014,16 +1023,17 @@ def main_screen():
     width = size.columns
     height = size.lines
 
-    options_and_screens = {"[ ] About"        : about_screen        ,
-                           "[ ] DVD"          : dvd_screen          ,
-                           "[ ] Pipes"        : pipes_screen        ,
-                           "[ ] Matrix"       : matrix_screen       ,
-                           "[ ] Calculator"   : calculator_screen   ,
-                           "[ ] Game of Life" : game_of_life_screen ,
-                           "[ ] To-do List"   : to_do_screen        ,
-                           "[ ] File Manager" : file_manager_screen ,
-                           "[ ] Auto Clicker" : auto_clicker        ,
-                           "[ ] Settings"     : settings_screen     }
+    options_and_screens = {"[ ] About"          : about_screen         ,
+                           "[ ] DVD"            : dvd_screen           ,
+                           "[ ] Pipes"          : pipes_screen         ,
+                           "[ ] Matrix"         : matrix_screen        ,
+                           "[ ] Calculator"     : calculator_screen    ,
+                           "[ ] Game of Life"   : game_of_life_screen  ,
+                           "[ ] A Shooter Game" : a_shooter_game_screen,
+                           "[ ] To-do List"     : to_do_screen         ,
+                           "[ ] File Manager"   : file_manager_screen  ,
+                           "[ ] Auto Clicker"   : auto_clicker         ,
+                           "[ ] Settings"       : settings_screen      }
     options = list(options_and_screens.keys())
     screens = list(options_and_screens.values())
     select = 0

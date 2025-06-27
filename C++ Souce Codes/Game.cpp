@@ -364,8 +364,9 @@ void newEnemy(vector<Enemy>& Enemies, const int width, const int height){
 
 
 // Changes the position of the enemy
-void changeEnemy(vector<Enemy>& Enemies, int const enemyIndex, int const width, int const height){
+void changeEnemy(vector<Enemy>& Enemies, int const enemyIndex, int const width, int const height, int& score){
     Enemies.at(enemyIndex).setPosition(rand() % width-1, rand() % height-1);
+    score++;
 }
 
 
@@ -426,6 +427,7 @@ int main(){
     vector<vector<char>> screen;
     bool running = true;
     int width, height;
+    int score;
     char key;
     Player player({0,0});
     vector<Enemy> Enemies = {};
@@ -478,7 +480,7 @@ int main(){
         addAndMoveAllEnemy(Enemies, screen, player, width, height);
         int shotted_enemy = addAndMoveAllBullets(Bullets, Enemies, screen, player, width, height);
         if(shotted_enemy != -1){
-            changeEnemy(Enemies, shotted_enemy, width, height);
+            changeEnemy(Enemies, shotted_enemy, width, height, score);
         };
         player.addToScreen(screen);
 
@@ -486,6 +488,8 @@ int main(){
         Sleep(20);
     };
     
+
+    cout << endl << score << endl;
 
     return 0;
 }
