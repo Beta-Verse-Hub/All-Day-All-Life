@@ -75,7 +75,6 @@ left_key_pressed = True
 right_key_pressed = True
 
 
-
 while running:
 
     active_window = user32.GetForegroundWindow()
