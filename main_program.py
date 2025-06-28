@@ -43,25 +43,6 @@ def update_size():
     height = size.lines
 
 
-# Updates the 'Data/config.txt' file with the current configuration.
-def update_config():
-
-    configuration = config
-
-    with open("Data/config.txt", "w") as config:
-        # Clears the file
-        config.truncate()
-    
-        # Writes the configuration
-        config.write("config = {\n")
-        for i in configuration:
-            config.write(f"\t'{i}' : {configuration[i]}\n")
-        config.write("}\n")
-    
-    # Reloads the configuration
-    from config import config
-
-
 # List all available drives on the system.
 def list_drives():
 
@@ -176,7 +157,7 @@ def output(screen, select:list=None):
         formatted_screen.append(a)
 
     # Prints out the formatted screen
-    print("\n"*50 + "".join(formatted_screen)[0:-1], end="")
+    print("".join(formatted_screen)[0:-1], flush=True, end="\r")
 
 
 # Makes an empty screen with border
@@ -316,7 +297,6 @@ def settings_screen():
 
     init_variables()
 
-    screen = []
     select = 1
 
     up_key_pressed = True
@@ -358,6 +338,8 @@ def settings_screen():
         
         output(["\n"*height, config.format_settings_screen(configuration, width, select), "\n"])
         time.sleep(0.01)
+
+    config.update_config(configuration)
 
 
 def a_shooter_game_screen():

@@ -89,11 +89,11 @@ esc - to exit
 A calculator on the terminal.
 
 Available characters:
-- 0-9 : numbers
-- + : addition
-- - : subtraction
-- * : multiplication
-- / : division
+- ```0-9``` : numbers
+- ```+``` : addition
+- ```-``` : subtraction
+- ```*``` : multiplication
+- ```/``` : division
 
 = - to evaluate the expression
 esc - to exit
