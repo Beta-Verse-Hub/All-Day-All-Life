@@ -1,7 +1,7 @@
 # ALL DAY ALL LIFE
 Ever wanted to run re is a game in progress to pipes.sh, cmatrix, etc on your terminal but then you realised that you need to setup WSL for that because you are a windows user which you think might take time. That is why, I have made this project named **All Day All Life** which contains not only a replica of those scripts but also a to do list, a file manager, an auto clicker, etc. with a cli-based interface
 
-Note: This program is windows-only
+Note: This program is **windows-only**.
 
 ## Installation
 This program uses the following libraries(the ones that are not preinstalled are marked with *):
@@ -85,6 +85,7 @@ esc - to exit
 A cmatrix program on windows? mmhm, yes please.
 
 esc - to exit
+
 ### Calculator
 A calculator on the terminal.
 
@@ -96,6 +97,17 @@ Available characters:
 - ```/``` : division
 
 = - to evaluate the expression
+esc - to exit
+
+### A Shooter Game
+A c++ cli shooter game.
+Shoot the enemy to kill them and spawn a new one.
+Go to the edge of the screen to come from the opposite side. 
+To show your final score exit the game. 
+
+/ - toggle dashing(you dash constantly)
+up/down/left/right arrow - to change dashing direction
+space - to shoot
 esc - to exit
 
 ### Game of Life
@@ -142,6 +154,7 @@ esc - to exit
 
 ### File Manager
 It is a file and folder viewer which can be used to not only view files and folders including the hidden ones but also run them.
+**You can't open files or folders which don't have permission to be accessed**
 
 up arrow / down arrow - to scroll through the files and folders
 left arrow - go outside a folder or drive
@@ -149,4 +162,10 @@ right arrow - go inside a folder or drive or run a file
 esc - to exit
 
 ### Auto Clicker
-**It is still in development so don't use it for now**
+A simple but efficient auto clicker.
+
+- Set the delay which happens before the clicking begins in seconds.
+- Set the delay between each click in seconds (it must not be less than 0.0001 seconds).
+- Set the mouse button you want to click.
+- Start auto clicking!
+- Press esc to stop.
