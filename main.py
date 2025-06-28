@@ -22,29 +22,34 @@ def position_window(window, main_grid, new_grid, screen_width, screen_height):
 def print_out_details(windows, active_window):
 
     size = os.get_terminal_size()
-    details = "\n"*50
+    total_lines = 3
+
+    details = ""
 
     # Adding the top border
     details += "-"*size.columns
-    
+
     # Time
-    details += f" ⏰ Time : {datetime.datetime.now().strftime('%H:%M:%S')}\n"
-    
+    details += f" Time : {datetime.datetime.now().strftime('%H:%M:%S')}\n"
+
     # The active window
-    details += f"Active Window ID : {active_window}\n"
-    
+    details += f" Active Window ID : {active_window}\n"
+
     # All the windows
     for i in range(len(windows)):
         details +=  f" {list(windows.keys())[i]} : {list(windows.values())[i][0]} : {list(windows.values())[i][1]}\n"
-    
+        total_lines += 1
+
     # Adding the bottom border
     details += "-"*size.columns
-    
+    total_lines += 1
+
     # Print out the details
-    print(details, end="")
+    print(f"\033[H{details}", flush=True, end="")
 
 
-user32 = ctypes.WinDLL('user32', use_last_error=True)
+
+user32 = ctypes.WinDLL("user32", use_last_error=True)
 kernel32 = ctypes.windll.kernel32
 
 active_window = user32.GetForegroundWindow()
@@ -55,6 +60,7 @@ FindWindowW.argtypes = [wintypes.LPCWSTR, wintypes.LPCWSTR]
 FindWindowW.restype = wintypes.HWND
 
 os.system('echo "\033]0;window_0\007"')
+os.system("cls")
 
 running = True
 
@@ -100,10 +106,11 @@ while running:
     if active_window == current_window:
 
         if keyboard.is_pressed("shift"):
+            os.system("cls")
             window_name = input("Give the window title that you want to manage : ")
             
             if FindWindowW(None, window_name) == None:
-                os.system(f'start "{window_name}" cmd /k python "{os.path.abspath("main_program.py")}" "{window_name}"')
+                os.system(f'start "{window_name}" cmd /k main_program.exe "{window_name}"')
 
             hwnd = FindWindowW(None, window_name)
             print(hwnd)
@@ -117,10 +124,12 @@ while running:
                 print(hwnd, width, height)
                 time.sleep(0.01)
 
+            os.system("cls")
             time.sleep(3)
             windows[window_name] = [[1,0], [2,2]]
         
         if keyboard.is_pressed("ctrl"):
+            os.system("cls")
             try:
                 x_grid = int(input("No of columns in the grid : "))
                 if x_grid < 1:
@@ -136,7 +145,9 @@ while running:
 
                 grid = [x_grid, y_grid]
             except ValueError as e:
-                print('Please enter an integer')
+                print("Please enter an integer")
+                time.sleep(1)
+            os.system("cls")
 
         if keyboard.is_pressed("esc"):
             running = False
